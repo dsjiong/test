@@ -1,11 +1,6 @@
-import datetime
-import json
-import unittest
-
 from Setting.CustomSkip import *
-
-from time import sleep
 from Setting.Base import *
+
 
 # @stop_on_failure
 class Tender(unittest.TestCase, information):
@@ -13,15 +8,17 @@ class Tender(unittest.TestCase, information):
     @classmethod
     def setUpClass(cls):
         # 使用机构名称作为项目名称，拼接时间
+        cls.mysql = information().connect('cqjy')
+        cls.cursor = cls.mysql.cursor()
         cls.corporatePhone = [18722222224, 13802965035, 13000000000]
-        # cls.corporateName = ["供应链", "信巴迪", "百事通"]
+        cls.corporateName = ["测试供应链", "测试信巴迪", "测试百事通"]
         cls.defaultInfo = information().getDefaultInfo()
         prefix = cls.defaultInfo["organizationName"][0:5]
         cls.assetName = cls.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + '小额工程测试'
-        print(cls.projectName)
 
     def test_01(self):
         """招标申请"""
+        print(self.projectName)
         url = "/api/admin/v1/smallProject/saveProjectApply"
         data = {
             "smallProjectId": None,
@@ -30,17 +27,14 @@ class Tender(unittest.TestCase, information):
             "organizationId": self.defaultInfo["organizationId"],
             "organizationCode": self.defaultInfo["organizationCode"],
             "organizationAddress": self.defaultInfo["organizationProvince"] + self.defaultInfo["organizationCity"] +
-                                   self.defaultInfo[
-                                       "organizationArea"] + self.defaultInfo["organizationStreet"] + self.defaultInfo[
-                                       "organizationAddress"],
+               self.defaultInfo["organizationArea"] + self.defaultInfo["organizationStreet"] +
+               self.defaultInfo["organizationAddress"],
             "areaOrganizationName": self.defaultInfo["areaOrganizationName"],
             "areaOrganizationId": self.defaultInfo["areaOrganizationId"],
             "areaOrganizationCode": "",
             "areaOrganizationAddress": self.defaultInfo["areaOrganizationProvince"] + self.defaultInfo[
-                "areaOrganizationCity"] +
-                                       self.defaultInfo["areaOrganizationArea"] + self.defaultInfo[
-                                           "areaOrganizationStreet"] +
-                                       self.defaultInfo["areaOrganizationAddress"],
+                "areaOrganizationCity"] + self.defaultInfo["areaOrganizationArea"] + self.defaultInfo[
+                "areaOrganizationStreet"] + self.defaultInfo["areaOrganizationAddress"],
             "tenderUserName": self.defaultInfo["tenderUserName"],
             "tenderUserPhone": self.defaultInfo["tenderUserPhone"],
             "approvalOrganization": self.defaultInfo["areaOrganizationName"],
@@ -76,12 +70,12 @@ class Tender(unittest.TestCase, information):
             "projectRegionCode": "440111113000"
         }
         response = self.post(url, data, self.villageHeaders)
-        print('01小额工程申请', response)
+        print('01小额工程申请')
         self.assertEqual(response["message"], "操作成功")
 
     def test_02(self):
         """项目审核"""
-        smallProjectId = self.getFirstAuditPageList(self.projectName)["smallProjectId"]
+        smallProjectId = self.getHistoryPageList(self.projectName)
         url = "/api/admin/v1/smallProjectAudit/audit"
         data = {
             "smallProjectId": smallProjectId,
@@ -96,7 +90,7 @@ class Tender(unittest.TestCase, information):
     @unittest.skip("不驳回，跳过")
     def test_rejected(self):
         """项目驳回"""
-        smallProjectId = self.getFirstAuditPageList(self.projectName)["smallProjectId"]
+        smallProjectId = self.getHistoryPageList(self.projectName)
         url = "/api/admin/v1/smallProjectAudit/audit"
         data = {
             "smallProjectId": smallProjectId,
@@ -111,11 +105,11 @@ class Tender(unittest.TestCase, information):
     @unittest.skip("不重提，跳过")
     def test_reApply(self):
         """重提申请"""
-        smallProjectId = self.getFirstAuditPageList(self.projectName)["smallProjectId"]
+        smallProjectId = self.getHistoryPageList(self.projectName)
         url = "/api/admin/v1/smallProject/saveProjectReApply"
         data = {
             "smallProjectId": smallProjectId,
-            "projectName": projectName,
+            "projectName": self.projectName,
             "organizationName": self.defaultInfo["organizationName"],
             "organizationId": self.defaultInfo["organizationId"],
             "organizationCode": self.defaultInfo["organizationCode"],
@@ -132,10 +126,8 @@ class Tender(unittest.TestCase, information):
             "areaOrganizationId": self.defaultInfo["areaOrganizationId"],
             "areaOrganizationCode": "",
             "areaOrganizationAddress": self.defaultInfo["areaOrganizationProvince"] + self.defaultInfo[
-                "areaOrganizationCity"] +
-                                       self.defaultInfo["areaOrganizationArea"] + self.defaultInfo[
-                                           "areaOrganizationStreet"] +
-                                       self.defaultInfo["areaOrganizationAddress"],
+                "areaOrganizationCity"] + self.defaultInfo["areaOrganizationArea"] + self.defaultInfo[
+                                           "areaOrganizationStreet"] + self.defaultInfo["areaOrganizationAddress"],
             "tenderUserName": self.defaultInfo["tenderUserName"],
             "tenderUserPhone": self.defaultInfo["tenderUserPhone"],
             "approvalOrganization": self.defaultInfo["areaOrganizationName"],
@@ -176,17 +168,17 @@ class Tender(unittest.TestCase, information):
 
     def test_03(self):
         """发布公告"""
-        smallProjectId = self.getFirstAuditPageList(self.projectName)["smallProjectId"]
+        smallProjectId = self.getHistoryPageList(self.projectName)
         url = "/api/admin/v1/smallProjectTrade/publicTrade"
         data = {
             "smallProjectId": smallProjectId,
             "publicStartDate": datetime.datetime.today().strftime('%Y-%m-%d'),
             "publicEndDate": (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'),
-            "enrollEndDate": (datetime.datetime.now() + datetime.timedelta(minutes=enrollEndDate)).strftime(
+            "enrollEndDate": (datetime.datetime.now() + datetime.timedelta(minutes=2)).strftime(
                 '%Y-%m-%d %H:%M:%S'),
-            "tenderEndDate": (datetime.datetime.now() + datetime.timedelta(minutes=tenderEndDate)).strftime(
+            "tenderEndDate": (datetime.datetime.now() + datetime.timedelta(minutes=3)).strftime(
                 '%Y-%m-%d %H:%M:%S'),
-            "auctionStartDate": (datetime.datetime.today() + datetime.timedelta(days=auctionStartDate)).strftime(
+            "auctionStartDate": (datetime.datetime.today() + datetime.timedelta(days=15)).strftime(
                 '%Y-%m-%d %H:%M:%S'),
             "auctionSignStartDate": (datetime.datetime.now() + datetime.timedelta(minutes=15)).strftime(
                 '%Y-%m-%d %H:%M:%S'),
@@ -206,58 +198,65 @@ class Tender(unittest.TestCase, information):
 
     def test_04(self):
         """循环报名-缴纳保证金"""
-        smallProjectId = self.getFirstAuditPageList(self.projectName)["smallProjectId"]
-        path = '/api/user/v1/user/open/censusLoginByCode'
-        enrollUrl = "/api/auction_interface/v1/smallProject/smallProjectEnroll"
-        checkUrl = '/api/auction_interface/v1/smallProject/getSmallProjectEarenstMoneyForPortal'
-        addMoneyurl = "/api/account/v1/counterRecord/open/simulationAddMoney"
-        url = "/api/auction_interface/v1/assetProjectEnroll/getEarenstMoneyForPortal"
-        enrolldata = {"smallProjectId": smallProjectId}
-        mysql = self.connect('cqjy')
-        cursor = mysql.cursor()
-        i = 0
+        smallProjectId = self.getHistoryPageList(self.projectName)
+        path = '/api/user/v1/user/open/loginByCode'
+        enrollUrl = "/api/auction/v1/smallProject/smallProjectEnroll"
+        enrollData = {"smallProjectId": smallProjectId}
         for phone in self.corporatePhone:
             data = {"phone": phone, "code": "888888", "user_Type": 2}
-            sessionid = self.login(data, path)  # 循环登录
+            sessionid = self.login(data, path)  # 循环登录获取token
             loginHeader = {"sessionid": sessionid, "Content-Type": "application/json"}  # 组装header
-            enroll = self.post(enrollUrl, enrolldata, loginHeader)  # 报名
-            print("报名")
-            self.assertEqual(enroll["message"], "操作成功")
-            # # 查询保证金
-            # check = self.post(checkUrl, enrolldata, loginHeader)
-            # print(check)
-            # addMoneydata = {"subAccountNo": check["data"]["mainAccountNo"], "payerAccountNo": 3602019309200000266,
-            #                 "amount": 1}
-            # addMoney = self.post(addMoneyurl, addMoneydata, loginHeader)
-            # print("缴纳保证金")
-            current_time = str(datetime.datetime.now())[:-7]
-            sqle = "UPDATE t_asset_project_enroll SET pay_earnest_money_date = \"" + current_time + "\", pay_earnest_money = 1, system_feedback_status = 1 WHERE asset_project_enroll_id = " + self.getEnrollPageList(
-                self.projectName)[i]["assetProjectEnrollId"]
-            cursor.execute(sqle)    # 循环修改保证金缴纳状态
-            portal = self.post(url, enrolldata, loginHeader)
-            print("查看保证金")
-            i += 1
-            cursor.close()
-        mysql.close()
-        self.assertEqual(portal["message"], "操作成功")
+            enroll = self.post(enrollUrl, enrollData, loginHeader)  # 报名
+        print("报名")
+        current_time = str(datetime.datetime.now())[:-7]
+        sqle = ("UPDATE t_asset_project_enroll SET pay_earnest_money_date = \"" + current_time +
+                "\", pay_earnest_money = 1, system_feedback_status = 1 WHERE small_project_id = " + smallProjectId)
+        print(sqle)
+        self.cursor.execute(sqle)  # 修改保证金缴纳状态
+        try:
+            self.mysql.commit()
+        except Exception as e:
+            self.mysql.rollback()
+        self.cursor.close()
+        self.mysql.close()
+        self.assertEqual(enroll["message"], "操作成功")
 
     def test_05(self):
+        """查看保证金"""
+        smallProjectId = self.getHistoryPageList(self.projectName)
+        path = '/api/user/v1/user/open/loginByCode'
+        url = "/api/auction/v1/smallProject/queryByEarnestMoney"
+        i = 0
+        for phone in self.corporatePhone:
+            project_enroll_id = self.getEnrollPageList(self.projectName, self.corporateName[i])[0][
+                "assetProjectEnrollId"]
+            enrolldata = {"smallProjectId": smallProjectId, "assetProjectEnrollId": project_enroll_id}
+            data = {"phone": phone, "code": "888888", "user_Type": 2}
+            sessionid = self.login(data, path)  # 循环登录获取token
+            loginHeader = {"sessionid": sessionid, "Content-Type": "application/json"}  # 组装header
+            portal = self.post(url, enrolldata, loginHeader)
+            i = i + 1
+        print("查看保证金")
+        self.assertEqual(portal["message"], "操作成功")
+        sleep(150)
+
+    def test_06(self):
         """中标人信息"""
-        smallProjectId = self.getFirstAuditPageList(self.projectName)["smallProjectId"]
+        smallProjectId = self.getHistoryPageList(self.projectName)
         project_enroll_id = self.getEnrollPageList(self.projectName)[1]["assetProjectEnrollId"]
-        corporatorUrl = '/api/admin/v1/smallProjectWin/getEnrollDetail'
-        corporatorData = {"enrollId": project_enroll_id}
-        corporator = self.post(corporatorUrl, corporatorData, self.villageHeaders)["data"]
+        corporateUrl = '/api/admin/v1/smallProjectWin/getEnrollDetail'
+        corporationData = {"enrollId": project_enroll_id}
+        corporate = self.post(corporateUrl, corporationData, self.villageHeaders)["data"]
         """指定中标人"""
         url = '/api/admin/v1/smallProjectWin/decideWin'
         data = {
             "winReason": "综合评分得分最高",
-            "winContact": corporator["contactPhone"],
-            "winContactUser": corporator["legalRepresent"],
-            "winId": corporator["bidUserId"],
-            "winIdCard": corporator["legalPersonCode"],
+            "winContact": corporate["contactPhone"],
+            "winContactUser": corporate["legalRepresent"],
+            "winId": corporate["bidUserId"],
+            "winIdCard": corporate["legalPersonCode"],
             "winIdCardType": "49",
-            "winName": corporator["legalPerson"],
+            "winName": corporate["legalPerson"],
             "smallProjectId": smallProjectId,
             "fileList": [{
                 "fileName": "bf8590f3-e21e-46d0-98c2-44928b2df0b6.png",
@@ -266,6 +265,7 @@ class Tender(unittest.TestCase, information):
         }
         response = self.post(url, data, self.villageHeaders)
         print("指定中标人", response)
+        self.assertEqual(response['message'], "操作成功")
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -273,6 +273,4 @@ class Tender(unittest.TestCase, information):
 
 
 if __name__ == "__main__":
-    imageKey = "contract/440111000000/202303/ea364b65-c361-48f5-88b3-02ad28633dd1.png"
-    docKey = "project/440111000000/202303/db04edbd-482d-46ab-9151-446ce04e33b7.doc"
     unittest.main()

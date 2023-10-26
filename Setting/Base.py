@@ -1,5 +1,6 @@
 import pymysql
 import datetime
+from time import sleep
 from Setting.Publics import *
 
 urllib3.disable_warnings()
@@ -39,9 +40,8 @@ class information(public):
         cur.execute(sql1)
         rest = cur.fetchone()[0]
         account = datetime.datetime.now().strftime('%y%m%d%H%M%S')
-        sql2 = "UPDATE t_user_info SET earnest_money_pay_account_name = " + account + " WHERE earnest_money_pay_account_name = " \
-               "'42443581a7a4fa0390894082d45bcfec0d3570b7d5a4706913302487d2083002'"
-        # print(sql2)
+        sql2 = "UPDATE t_user_info SET earnest_money_pay_account_name = " + account + " WHERE earnest_money_pay_account_name = '42443581a7a4fa0390894082d45bcfec0d3570b7d5a4706913302487d2083002'"
+        print(sql2)
         sql3 = "UPDATE t_user_info SET earnest_money_pay_account_name = " \
                "'42443581a7a4fa0390894082d45bcfec0d3570b7d5a4706913302487d2083002' WHERE phone = \"" + self.name + "\""
         # print(sql3)
@@ -104,7 +104,7 @@ class information(public):
     # 资产登记
     def saveAssetResource(self, assetName):
         getorgInfo = self.getorgInfo(self.villageHeaders)
-        url = "/api/admin/v1/assetInfoFixed/saveAssetFixed"
+        url = "/api/admin/v1/assetInfoResource/saveAssetResource"
         data = {
             "assetCode": None,
             "sysOrganizationName": None,
@@ -122,13 +122,9 @@ class information(public):
             "street": getorgInfo["street"],
             "address": getorgInfo["address"],
             "purpose": None,
-            "purposeExplain": "厂房",
-            "buildArea": "200",
-            "buildAreaUnit": 1,
-            "sharedArea": None,
-            "sharedAreaUnit": 1,
-            "acquiredDate": ((datetime.date.today() + datetime.timedelta(days=-30)).strftime('%Y-%m-%d {}')).format(
-                '00:00:00'),
+            "purposeExplain": "林木",
+            "landOccupation": "16",
+            "landOccupationUnit": 0,
             "videoUrl": None,
             "videoThumbnailUrl": None,
             "images": [
@@ -136,40 +132,31 @@ class information(public):
                 "asset/440112000000/202306/3682bf2c-1211-4b46-a386-2a35fdbc4dc8.png",
                 "asset/441702000000/202307/c0a09fc8-d223-4071-ae89-b7a4f3c07ec3.jpg"
             ],
-            "safetyLevel": None,
-            "weighCoefficient": None,
-            "serviceLife": None,
-            "twoFourAddress": None,
-            "originalValue": None,
-            "cumulativeDepreciation": None,
-            "netWorth": None,
-            "startDepreciationDate": None,
-            "selfUse": None,
-            "attribute": None,
             "developmentType": None,
             "developmentReason": None,
             "unitNo": None,
             "cadastreNo": None,
             "landNo": None,
             "adjunctiveResourceNo": None,
-            "houseOwner": None,
-            "floor": None,
-            "buildStructure": None,
-            "constructionProjectPlanningPermitNo": None,
-            "fireSafetyNo": None,
+            "attribute": None,
+            "landUsufructNo": None,
+            "landUser": None,
+            "landOwnershipNo": None,
+            "landOwner": None,
             "startDate": None,
+            "selfUse": None,
             "coordinate": None,
             "disposalMethod": None,
-            "assetGroupCodeLevel1": "J000000",
-            "assetGroupLevel1Name": "经营性资产",
-            "assetGroupCodeLevel2": "J020000",
-            "assetGroupLevel2Name": "经营性固定资产",
-            "assetGroupCodeLevel3": "J020100",
-            "assetGroupLevel3Name": "房屋建筑",
-            "assetGroupCodeLevel4": "J020101",
-            "assetGroupLevel4Name": "农业生产用房",
-            "assetGroupCodeLevel5": "J02010101",
-            "assetGroupLevel5Name": "厂房",
+            "assetGroupCodeLevel1": "Z000000",
+            "assetGroupLevel1Name": "资源性资产",
+            "assetGroupCodeLevel2": "Z060000",
+            "assetGroupLevel2Name": "林木",
+            "assetGroupCodeLevel3": "Z060200",
+            "assetGroupLevel3Name": "商品林",
+            "assetGroupCodeLevel4": "",
+            "assetGroupLevel4Name": "",
+            "assetGroupCodeLevel5": "",
+            "assetGroupLevel5Name": "",
             "sysOrganizationId": getorgInfo["sysOrganizationId"],
         }
         req = self.post(url, data, self.villageHeaders)
@@ -220,15 +207,15 @@ class information(public):
     def getEarenstMoneyForPortal(self, projectName, payerAccountNo):
         # 查询子账号
         assetProjectId = self.getProjectInfoPage(projectName)
-        url1 = "/api/auction_interface/v1/assetProjectEnroll/getEarnestMoneyInfo"
+        url1 = "/api/auction/v1/assetProjectEnroll/getEarnestMoneyInfo"
         data1 = {"assetProjectId": assetProjectId}
         req1 = self.post(url1, data1, self.userHeaders)["data"]
         # 缴纳保证金
         url2 = "/api/account/v1/counterRecord/open/simulationAddMoney"
         data2 = {"subAccountNo": req1["mainAccountNo"], "payerAccountNo": payerAccountNo, "amount": 1}
-        req2 = self.post(url2, data2, self.userHeaders)
+        req2 = self.post(url2, data2, self.auditHeaders)
         # 查询保证金
-        url = "/api/auction_interface/v1/assetProjectEnroll/getEarenstMoneyForPortal"
+        url = "/api/auction/v1/assetProjectEnroll/getEarenstMoneyForPortal"
         data = {"assetProjectId": assetProjectId}
         req = public().post(url, data, self.userHeaders)
         return req
@@ -336,24 +323,25 @@ class information(public):
         response = self.post(url, data, self.villageHeaders)
         return response["data"]
 
-    def getFirstAuditPageList(self, projectName):
-        """查询招标项目流程信息"""
-        url = "/api/admin/v1/smallProjectAudit/getFirstAuditPageList"
+    def getHistoryPageList(self, projectName):
+        """立项历史记录查询"""
+        url = "/api/admin/v1/smallProject/getHistoryPageList"
         data = {
             "current": 1,
             "size": 10,
             "projectName": projectName
         }
-        response = self.post(url, data, self.auditHeaders)
-        return response["data"]["records"][0]
+        response = self.post(url, data, self.auditHeaders)["data"]["records"][0]["smallProjectId"]
+        return response
 
-    def getEnrollPageList(self, projectName):
+    def getEnrollPageList(self, projectName, legal=""):
         """指定中标人列表"""
-        smallProjectId = self.getFirstAuditPageList(projectName)["smallProjectId"]
+        smallProjectId = self.getHistoryPageList(projectName)
         url = '/api/admin/v1/smallProjectWin/getEnrollPageList'
         data = {
             "current": 1,
             "size": 10,
+            "legalRepresentative": legal,  # 默认为空，传值查询对应法人名称
             "smallProjectId": smallProjectId
         }
         response = self.post(url, data, self.villageHeaders)

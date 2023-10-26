@@ -12,13 +12,14 @@ class Auction(unittest.TestCase, information):
         # 使用机构名称作为项目名称，拼接时间
         self.cunInfo = information().getorgInfo(self.villageHeaders)
         self.auditInfo = information().getorgInfo(self.auditHeaders)
-        self.getsysuser = information().getSysUser(self.vPhone, self.villageHeaders)
+        self.getSysUser = information().getSysUser(self.vPhone, self.villageHeaders)
         self.enroll = 3
-        self.startDate = 7
-        self.endDate = 11
+        self.startDate = 5
+        self.endDate = 9
         prefix = information().getorgInfo(self.villageHeaders)["organizationName"][0:5]
-        projectType = '竞价测试'
-        self.assetName = self.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + projectType
+        projectType = '出售竞价测试'
+        time = (datetime.datetime.now()).strftime('%m%d%H%M%S')
+        self.assetName = self.projectName = prefix + time + projectType
 
     def test_01(self,):
         """资产登记"""
@@ -27,14 +28,14 @@ class Auction(unittest.TestCase, information):
         print("01资产登记")
         self.assertEqual(resource["message"], '操作成功')
 
-    # 立项申请-出租
     def test_02(self):
+        """立项申请"""
         assetId = self.getAssetPageList(self.assetName)
         asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/assetProject/saveProjectApply"
         data = {
             "tradeMode": "01",
-            "tradeType": "01",
+            "tradeType": "02",
             "organizationId": self.cunInfo["sysOrganizationId"],
             "organizationName": self.cunInfo["organizationName"],
             "provinceId": self.cunInfo["provinceId"],
@@ -46,8 +47,8 @@ class Auction(unittest.TestCase, information):
             "streetId": self.cunInfo["streetId"],
             "street": self.cunInfo["street"],
             "address": self.cunInfo["address"],
-            "contact": self.getsysuser['fullName'],
-            "phone": self.getsysuser['phone'],
+            "contact": self.getSysUser['fullName'],
+            "phone": self.getSysUser['phone'],
             "projectName": self.assetName,
             "projectType": asstInfo['assetGroupCodeLevel3'],
             "projectTypeName": asstInfo['assetGroupLevel3Name'],
@@ -81,7 +82,7 @@ class Auction(unittest.TestCase, information):
                 "areaId": self.cunInfo["areaId"],
                 "street": self.cunInfo["street"],
                 "streetId": self.cunInfo["streetId"],
-                "assetAddress": self.cunInfo["address"],
+                "assetAddress": asstInfo["assetAddress"],
                 "originalValue": asstInfo['originalValue'],
                 "buildArea": asstInfo['buildArea'],
                 "buildAreaUnit": asstInfo['buildAreaUnit'],
@@ -125,13 +126,13 @@ class Auction(unittest.TestCase, information):
             ],
             "enrollType": 0,
             "blacklistEnter": "false",
-            "priorityOriginalLessee": "false",
+            "priorityOriginalLessee": "false",  # 是否原承租方优先权 0=否 1=是
             "payTradeEarnestMoney": "true",
             "tradeEarnestMoney": 1,
-            "floorPrice": 16888,
-            "minBidRange": 10000,
-            "maxBidRange": 100000,
-            "assetDeliverDay": None,
+            "floorPrice": 91688,
+            # "minBidRange": 10000,
+            # "maxBidRange": 900000,
+            "assetDeliverDay": 5,
             "progressiveIncrease": "false",  # 是否递增付款金额 0=否 1=是
             "progressiveIncreaseWay": "",  # 递增方式 1=按比例递增 2=按固定金额递增
             "progressiveIncreaseAmount": '',  # 每次递增固定金额
@@ -140,13 +141,13 @@ class Auction(unittest.TestCase, information):
             "progressiveIncreaseIncrease": None,  # 每次递增幅度为上期缴纳租金的n百分比
             "rentFree": "false",  # 是否有免租期
             "rentFreePeriod": None,  # 免租天数
-            "rentCollectMethod": '4',  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
-            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],  # 租赁开始时间
-            "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=30))[0:19],  # 租赁开始时间
+            "rentCollectMethod": '0',  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
+            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],  # 租赁开始时间,出售类型时间为空
+            "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=30))[0:19],  # 租赁开始时间,出售类型时间为空
             "projectTradeYear": "30天",
-            "perpetualAssignment": "false",
+            "perpetualAssignment": "false",  # 是否永久出让 0=否 1=是
             "repostAssetProject": "false",  # 流拍是否自动挂牌
-            "contractExpirationDate": 10,
+            "contractExpirationDate": 5,
             "isSubmit": 1,
             "taskId": None
         }
@@ -154,13 +155,13 @@ class Auction(unittest.TestCase, information):
         print("02立项申请", req)
         self.assertEqual(req["message"], '操作成功')
 
-    # 调用Base类方法立项审核
     def test_03(self):
+        """调用Base类方法立项审核"""
         req = self.audit(self.assetName, status=11)
         print("03立项审核", req)
         self.assertEqual(req["message"], '操作成功')
 
-    @skip_dependent("test_03")
+    # @skip_dependent("test_03")
     def test_04(self):
         """发布交易公告"""
         assetProjectId = self.getProjectInfoPage(self.assetName)
@@ -211,12 +212,12 @@ class Auction(unittest.TestCase, information):
     def test_06(self):
         """报名"""
         assetProjectId = self.getProjectInfoPage(self.assetName)
-        url1 = "/api/auction_interface/v1/assetProjectAuditMaterials/getAssetProjectAuditMaterials"
+        url1 = "/api/auction/v1/assetProjectAuditMaterials/getAssetProjectAuditMaterials"
         data1 = {"assetProjectId": assetProjectId}
         req1 = self.post(url1, data1, self.userHeaders)
-        print("06报名-下一步", req1)
+        # print("06报名-下一步", req1)
         # 报名-确定
-        url = "/api/auction_interface/v1/assetProjectEnroll/saveAssetProjectEnroll"
+        url = "/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll"
         data = {
             "assetProjectId": assetProjectId  # ,
             # "files": [
@@ -236,7 +237,7 @@ class Auction(unittest.TestCase, information):
         print("08查看交易详情", req)
         self.assertEqual(req["message"], '操作成功')
         # sleep((self.earnestMoneyPayEndDate * 60) + 5)
-        sleep(430)
+        sleep(330)
 
     # 资格审核-审核
     # def test_08(self):
@@ -250,17 +251,17 @@ class Auction(unittest.TestCase, information):
     def test_08(self):
         """出价"""
         assetProjectId = self.getProjectInfoPage(self.assetName)
-        url1 = "/api/auction_interface/v1/auctions/open/getAuctionPageList"
+        url1 = "/api/auction/v1/auctions/open/getAuctionPageList"
         data1 = {"projectName": self.assetName, "tradeMode": "01", "current": 1, "size": 16, "isShowPushData": 1,
                  "isShowTestData": "0"}
         req1 = self.post(url1, data1, self.userHeaders)['data']['records'][0]
-        url2 = "/api/auction_interface/v1/auctions/auction_interface"
+        url2 = "/api/auction/v1/auctions/auction"
         data2 = {"assetProjectId": assetProjectId, "assetProjectAuctionId": req1["assetProjectAuctionId"],
-                 "offerAPrice": 16888}
+                 "offerAPrice": 91688}
         req2 = self.post(url2, data2, self.userHeaders)
         print("09出价", req2)
         self.assertEqual(req2["message"], '操作成功')
-        sleep(370)
+        sleep(350)
 
     def test_09(self):
         """上传合同"""

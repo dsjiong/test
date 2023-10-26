@@ -1,6 +1,8 @@
 import unittest
 import time
 from Setting.Base import *
+
+
 # from Setting.CustomSkip import *
 
 
@@ -13,6 +15,7 @@ class testOpenConsult(unittest.TestCase, information):
         # 使用机构名称作为项目名称，拼接时间
         self.cunInfo = information().getorgInfo(self.villageHeaders)
         self.auditInfo = information().getorgInfo(self.auditHeaders)
+        self.getSysUser = information().getSysUser(self.vPhone, self.villageHeaders)
         self.projectName = self.assetName = information().getorgInfo(self.villageHeaders)["organizationName"][0:3] + \
                                             (datetime.datetime.now()).strftime('%m%d%H%M%S') + '协商测试'
 
@@ -28,11 +31,12 @@ class testOpenConsult(unittest.TestCase, information):
     def test_02(self):
         """发布遴选公告"""
         # 利用资产名称查询资产信息
-        assetInfo = self.getAssetPageList(self.assetName)
+        assetId = self.getAssetPageList(self.assetName)
+        asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/openConsult/selectApply"
         data = {
             "tradeMode": "02",
-            "tradeType": "01",
+            "tradeType": "03",
             "organizationId": self.cunInfo["sysOrganizationId"],
             "organizationName": self.cunInfo["organizationName"],
             "provinceId": self.cunInfo["provinceId"],
@@ -44,34 +48,34 @@ class testOpenConsult(unittest.TestCase, information):
             "streetId": self.cunInfo["streetId"],
             "street": self.cunInfo["street"],
             "address": self.cunInfo["address"],
-            "contact": "林縡",
-            "phone": "13751964412",
+            "contact": self.getSysUser['fullName'],
+            "phone": self.getSysUser['phone'],
             "projectName": self.projectName,
-            "projectType": "Z010100",
-            "projectTypeName": "耕地",
-            "remarkIndustryRequire": "无",
-            "remarkFireControl": "无",
+            "projectType": asstInfo['assetGroupCodeLevel3'],
+            "projectTypeName": asstInfo['assetGroupLevel3Name'],
+            "remarkIndustryRequire": "行业要求",
+            "remarkFireControl": "消防说明",
             "remarkOther": None,
             "remarkOtherClause": None,
             "remarkTaxation": None,
             "remark": None,
             "detailParamList": [
                 {
-                    "assetId": assetInfo['assetId'],
+                    "assetId": assetId['assetId'],
                     "sysOrganizationId": self.cunInfo["sysOrganizationId"],
                     "sysOrganizationName": self.cunInfo["organizationName"],
                     "assetName": self.assetName,
-                    "assetCode": "1Z0000002656",
-                    "assetStatus": 0,
-                    "assetNature": None,
-                    "assetType": None,
-                    "assetTypeName": None,
-                    "assetCategory": None,
-                    "assetCategoryName": None,
-                    "disposalMethod": None,
-                    "acquiredDate": (datetime.datetime.today() + datetime.timedelta(days=-100)).strftime('%y-%m-%d'),
-                    "purpose": None,
-                    "purposeExplain": "无",
+                    "assetCode": asstInfo['assetCode'],
+                    "assetStatus": asstInfo['assetStatus'],
+                    "assetNature": asstInfo['assetNature'],
+                    "assetType": asstInfo["assetType"],
+                    "assetTypeName": asstInfo["assetTypeName"],
+                    "assetCategory": asstInfo['assetCategory'],
+                    "assetCategoryName": asstInfo['assetCategoryName'],
+                    "disposalMethod": asstInfo['disposalMethod'],
+                    "acquiredDate": asstInfo['acquiredDate'],
+                    "purpose": asstInfo['purpose'],
+                    "purposeExplain": asstInfo['purposeExplain'],
                     "provinceId": self.cunInfo["provinceId"],
                     "province": self.cunInfo["province"],
                     "cityId": self.cunInfo["cityId"],
@@ -82,28 +86,29 @@ class testOpenConsult(unittest.TestCase, information):
                     "street": self.cunInfo["street"],
                     "assetAddress": self.cunInfo["address"],
                     "originalValue": None,
-                    "buildArea": None,
-                    "buildAreaUnit": None,
-                    "landOccupation": 6.66,
-                    "landOccupationUnit": 0,
-                    "mainPicture": "default/440111000000/202302/6852cd89-4ff1-45a3-beaf-0530efa03471.jpg",
+                    "buildArea": asstInfo['buildArea'],
+                    "buildAreaUnit": asstInfo['buildAreaUnit'],
+                    "landOccupation": asstInfo['landOccupation'],
+                    "landOccupationUnit": asstInfo['landOccupationUnit'],
+                    "mainPicture": asstInfo['mainPicture'],
                     "temporaryAssets": 0,
                     "contractEndDate": None,
-                    "assetGroupCodeLevel1": "Z000000",
-                    "assetGroupCodeLevel2": "Z010000",
-                    "assetGroupCodeLevel3": "Z010100",
-                    "assetGroupCodeLevel4": "",
-                    "assetGroupCodeLevel5": "",
-                    "assetGroupLevel1Name": "资源性资产",
-                    "assetGroupLevel2Name": "农用地",
-                    "assetGroupLevel3Name": "耕地",
-                    "assetGroupLevel4Name": "",
-                    "assetGroupLevel5Name": "",
-                    "oriUserName": None,
-                    "oriUserType": None,
-                    "oriIdCardType": None,
-                    "oriIdCardNo": None,
-                    "assetGroupCode": "Z010100",
+                    "assetGroupCodeLevel1": asstInfo['assetGroupCodeLevel1'],
+                    "assetGroupCodeLevel2": asstInfo['assetGroupCodeLevel2'],
+                    "assetGroupCodeLevel3": asstInfo['assetGroupCodeLevel3'],
+                    "assetGroupCodeLevel4": asstInfo['assetGroupCodeLevel4'],
+                    "assetGroupCodeLevel5": asstInfo['assetGroupCodeLevel5'],
+                    "assetGroupLevel1Name": asstInfo['assetGroupLevel1Name'],
+                    "assetGroupLevel2Name": asstInfo['assetGroupLevel2Name'],
+                    "assetGroupLevel3Name": asstInfo['assetGroupLevel3Name'],
+                    "assetGroupLevel4Name": asstInfo['assetGroupLevel4Name'],
+                    "assetGroupLevel5Name": asstInfo['assetGroupLevel5Name'],
+                    "oriUserName": asstInfo['oriUserName'],
+                    "oriUserType": asstInfo['oriUserType'],
+                    "oriIdCardType": asstInfo['oriIdCardType'],
+                    "oriIdCardNo": asstInfo['oriIdCardNo'],
+                    "oriUserPhone": asstInfo['oriUserPhone'],
+                    "assetGroupCode": asstInfo['assetGroupCodeLevel3'],
                     "assetProjectId": None
                 }
             ],
@@ -159,7 +164,7 @@ class testOpenConsult(unittest.TestCase, information):
         self.update()
         # 意向人申请
         projectId = self.getProjectInfoPage(self.projectName)
-        url = '/api/auction_interface/v1/assetProjectEnroll/saveAssetProjectEnroll'
+        url = '/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll'
         data = {"assetProjectId": projectId, "files": []}
         req = self.post(url, data, self.userHeaders)
         print("04意向人申请", req)
@@ -236,8 +241,8 @@ class testOpenConsult(unittest.TestCase, information):
             "streetId": self.cunInfo["streetId"],
             "street": self.cunInfo["street"],
             "address": self.cunInfo["address"],
-            "contact": "joe",
-            "phone": "13751964412",
+            "contact": self.getSysUser['fullName'],
+            "phone": self.getSysUser['phone'],
             "auctionUserName": "测试邓",
             "auctionUserId": None,
             "contactPhone": None,
@@ -277,7 +282,7 @@ class testOpenConsult(unittest.TestCase, information):
             "tradeOrganizationAddress": "广东省阳江市江城区城东街道农科路22之1号",
             "tradeOrganizationUserName": "黄先生",
             "tradeOrganizationUserPhone": "13751964421",
-            "tradeCode": "J01",
+            "tradeCode": "Z01",
             "provinceCode": "440000000000",
             "cityCode": "441700000000",
             "areaCode": "441702000000",
@@ -289,9 +294,9 @@ class testOpenConsult(unittest.TestCase, information):
             "projectStatusText": None,
             "applicantsCount": 0,
             "perpetualAssignment": False,
-            "projectTypeName": "耕地",
-            "assetGroupCode": "Z010100",
-            "assetGroupName": "耕地",
+            "projectTypeName": req3['data']['assetProject']['projectTypeName'],
+            "assetGroupCode": req3['data']['assetProject']['assetGroupCode'],
+            "assetGroupName": req3['data']['assetProject']['assetGroupName'],
             "flowAssetProjectId": None,
             "contractExpirationDate": 10,
             "assetProjectSchemeConsultId": req4["data"]["scheme"]["assetProjectSchemeConsultId"],
@@ -324,15 +329,15 @@ class testOpenConsult(unittest.TestCase, information):
                 "assetCode": req3["data"]['assetDetails'][0]['assetCode'],
                 "assetName": req3["data"]['assetDetails'][0]['assetName'],
                 "purpose": None,
-                "purposeExplain": "用途",
-                "originalValue": None,
+                "purposeExplain": req3['data']['assetDetails'][0]['purposeExplain'],
+                "originalValue": req3['data']['assetDetails'][0]['originalValue'],
+                "buildArea": req3['data']['assetDetails'][0]['buildArea'],
+                "buildAreaUnit": req3['data']['assetDetails'][0]['buildAreaUnit'],
+                "landOccupation": req3['data']['assetDetails'][0]['landOccupation'],
+                "landOccupationUnit": req3['data']['assetDetails'][0]['landOccupationUnit'],
                 "threeCapitalsOwnershipNo": None,
                 "sharedArea": None,
                 "sharedAreaUnit": None,
-                "buildArea": None,
-                "buildAreaUnit": None,
-                "landOccupation": 1,
-                "landOccupationUnit": 0,
                 "unitNo": None,
                 "provinceId": self.cunInfo["provinceId"],
                 "province": self.cunInfo["province"],
@@ -349,16 +354,16 @@ class testOpenConsult(unittest.TestCase, information):
                 "modifiedUserId": None,
                 "videoUrl": None,
                 "videoThumbnailUrl": None,
-                "provinceCode": "440000000000",
-                "cityCode": "440800000000",
-                "areaCode": "440882000000",
-                "streetCode": "440882108000",
-                "mainPicture": "asset/441702000000/202305/b2d129b7-2362-4eb3-b33a-7cee89199050.jpg",
-                "images": None,
-                "assetGroupCode": "Z010100",
-                "assetGroupLevel1Name": "资源性资产",
-                "assetGroupLevel2Name": "农用地",
-                "assetGroupLevel3Name": "耕地",
+                "provinceCode": None,
+                "cityCode": None,
+                "areaCode": None,
+                "streetCode": None,
+                "mainPicture": req3['data']['assetDetails'][0]['mainPicture'],
+                "images": req3['data']['assetDetails'][0]['images'],
+                "assetGroupCode": req3['data']['assetDetails'][0]['assetGroupCode'],
+                "assetGroupLevel1Name": None,
+                "assetGroupLevel2Name": None,
+                "assetGroupLevel3Name": None,
                 "assetGroupLevel4Name": None,
                 "assetGroupLevel5Name": None
             }],
@@ -388,7 +393,7 @@ class testOpenConsult(unittest.TestCase, information):
     def test_07(self):
         # 意向人同意
         project = self.getProjectManagementList(self.projectName)
-        url = '/api/auction_interface/v1/openConsult/intentConfirm'
+        url = '/api/auction/v1/openConsult/intentConfirm'
         data = {"assetProjectId": project['assetProjectId'],
                 "businessKey": project['businessKey'], "status": 1, "annotation": ""}
         req = self.post(url, data, self.userHeaders)
@@ -418,7 +423,7 @@ class testOpenConsult(unittest.TestCase, information):
         # 查询成交公告
         req = self.search_notice(self.assetName)
         print("11查询成交公告", req)
-        self.assertEqual(req["message"], '操作成功')
+        self.assertEqual(req["data"]["records"][0]["projectName"], self.projectName)
 
     @classmethod
     def tearDownClass(self) -> None:

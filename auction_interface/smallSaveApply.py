@@ -1,11 +1,12 @@
 from time import sleep
 import unittest
 from Setting.Base import *
-from Setting.CustomSkip import skip_dependent
+from Setting.CustomSkip import *
 
 urllib3.disable_warnings()
 
 
+@stop_on_failure
 class smallTrade(unittest.TestCase, information):
 
     @classmethod
@@ -15,23 +16,24 @@ class smallTrade(unittest.TestCase, information):
         self.auditInfo = information().getorgInfo(self.auditHeaders)
         self.getsysuser = information().getSysUser(self.vPhone, self.villageHeaders)
         prefix = self.cunInfo["organizationName"][0:5]
-        self.assetName = self.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + '小额测试'
+        time = (datetime.datetime.now()).strftime('%m%d%H%M%S')
+        self.assetName = self.projectName = prefix + time + '小额出售测试'
 
-    # 创建资产
     def test_01(self):
+        """创建资产"""
         print(self.assetName)
         resource = self.saveAssetResource(self.assetName)
         print("01资产登记")
         self.assertEqual(resource["message"], '操作成功')
 
-    # 小额立项申请
     def test_02(self):
+        """小额立项申请"""
         assetId = self.getAssetPageList(self.assetName)
         asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/smallTrade/smallApply"
         data = {
             "tradeMode": "03",
-            "tradeType": "01",
+            "tradeType": "03",
             "organizationId": self.cunInfo["sysOrganizationId"],
             "organizationName": self.cunInfo["organizationName"],
             "provinceId": self.cunInfo["provinceId"],
@@ -46,8 +48,8 @@ class smallTrade(unittest.TestCase, information):
             "contact": self.getsysuser['fullName'],
             "phone": self.getsysuser['phone'],
             "projectName": self.projectName,
-            "projectType": asstInfo["assetGroupCodeLevel5"],
-            "projectTypeName": asstInfo["assetGroupLevel5Name"],
+            "projectType": asstInfo["assetGroupCodeLevel3"],
+            "projectTypeName": asstInfo["assetGroupLevel3Name"],
             "remarkIndustryRequire": "行业要求",
             "remarkFireControl": "消防情况说明",
             "remarkOther": None,
@@ -68,9 +70,7 @@ class smallTrade(unittest.TestCase, information):
                     "assetCategory": asstInfo['assetCategory'],
                     "assetCategoryName": asstInfo['assetCategoryName'],
                     "disposalMethod": asstInfo['disposalMethod'],
-                    "acquiredDate": (
-                        (datetime.date.today() + datetime.timedelta(days=-30)).strftime('%Y-%m-%d {}')).format(
-                        '00:00:00'),
+                    "acquiredDate": asstInfo['acquiredDate'],
                     "purpose": asstInfo['purpose'],
                     "purposeExplain": asstInfo["assetGroupLevel5Name"],
                     "province": self.cunInfo["province"],
@@ -105,17 +105,17 @@ class smallTrade(unittest.TestCase, information):
                     "oriIdCardType": asstInfo['oriIdCardType'],
                     "oriIdCardNo": asstInfo['oriIdCardNo'],
                     "oriUserPhone": asstInfo['oriUserPhone'],
-                    "assetGroupCode": asstInfo["assetGroupCodeLevel5"],
+                    "assetGroupCode": asstInfo["assetGroupCodeLevel3"],
                     "assetProjectId": None,
                 }
             ],
             "priorityOriginalLessee": "false",
             "payTradeEarnestMoney": 'true',
             "tradeEarnestMoney": 1,
-            "floorPrice": 30000,
+            "floorPrice": 4168,
             "minBidRange": None,
             "maxBidRange": None,
-            "assetDeliverDay": "15",
+            "assetDeliverDay": "5",
             "progressiveIncrease": "false",  # 是否递增付款金额 0=否 1=是
             "progressiveIncreaseWay": None,  # 递增方式 1=按比例递增 2=按固定金额递增
             "progressiveIncreaseAmount": None,  # 每次递增固定金额
@@ -153,8 +153,8 @@ class smallTrade(unittest.TestCase, information):
         print("02小额申请", apply)
         self.assertEqual(apply['message'], '操作成功')
 
-    # 立项审核
     def test_03(self):
+        """立项审核"""
         audit = self.audit(self.projectName, mode='03', status=11)
         print("03立项审核", audit)
         self.assertEqual(audit["message"], '操作成功')
@@ -187,18 +187,18 @@ class smallTrade(unittest.TestCase, information):
     def test_06(self):
         """06报名"""
         assetProjectId = self.getProjectInfoPage(self.projectName)
-        url = "/api/auction_interface/v1/assetProjectEnroll/saveAssetProjectEnroll"
+        url = "/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll"
         data = {"assetProjectId": assetProjectId}
         sign = self.post(url, data, self.userHeaders)
         print("06报名-确定", sign)
         self.assertEqual(sign['message'], '操作成功')
 
     def test_07(self):
-        """07查看交易详情"""
+        """07缴纳保证金"""
         pay = self.getEarenstMoneyForPortal(self.assetName, 3602019309200000266)
-        print("07查看交易详情", pay)
+        print("07缴纳保证金", pay)
         self.assertEqual(pay["message"], '操作成功')
-        sleep(630)
+        sleep(330)
 
     def test_08(self):
         """08上传合同"""

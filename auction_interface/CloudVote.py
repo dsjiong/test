@@ -174,7 +174,7 @@ class Vote(unittest.TestCase, information):
             a = random.choice([0, 1])
             voteData = {"cloudVoteResult": 1, "remark": "", "assetProjectCloudId": assetProjectCloudId}
             phone = censusData[census]['phone']
-            if phone in unique_phones:  # 如果phone已经出现过，则跳过当前循环
+            if phone in unique_phones or phone == '13751964417':  # 如果phone已经出现过，则跳过当前循环
                 continue
             unique_phones.add(phone)  # 将当前phone添加到集合中
             data = {"phone": phone, "code": "888888", "user_Type": 1}
@@ -275,7 +275,7 @@ class Vote(unittest.TestCase, information):
     def test_10(self):
         """报名-确定"""
         assetProjectId = self.getProjectInfoPage(self.projectName)
-        url = "/api/auction_interface/v1/assetProjectEnroll/saveAssetProjectEnroll"
+        url = "/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll"
         data = {"assetProjectId": assetProjectId}
         sign = self.post(url, data, self.userHeaders)
         print("10报名-确定", sign)

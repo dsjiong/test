@@ -289,7 +289,7 @@ def activitiInstance():
 
 # ---------------------前台续约详情-----------------------------
 def getRenewalTradeDetail():
-    url = '/api/auction_interface/v1/renewalTrade/open/getRenewalTradeDetail'
+    url = '/api/auction/v1/renewalTrade/open/getRenewalTradeDetail'
     data = {"assetProjectId": ActivitiPage["assetProjectId"]}
     respone = public().post(url, data, sessionid_user)
     return respone["data"]["businessKey"]
@@ -297,7 +297,7 @@ def getRenewalTradeDetail():
 
 # ---------------------报名-确定-----------------------------
 def saveAssetProjectEnroll():
-    url = '/api/auction_interface/v1/assetProjectEnroll/saveAssetProjectEnroll'
+    url = '/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll'
     data = {
         "assetProjectId": ActivitiPage["assetProjectId"],
         "businessKey": getRenewalTradeDetail(),
@@ -369,7 +369,7 @@ if __name__ == '__main__':
     sessionid_v = headers[0]  # 村集体账号13210000012(工商)
     userName = "测试邓"   # 袁力思
     userPhone = 13751964417  # 13535550504
-    idcardNO = 441422199303144030  # 441422199303144030  #440224199805052858
+    idcardNO = 441422199303144030   # 440224199805052858
     userType = 1
     idCardType = 10
     companyName = "广州信巴迪信息科技有限公司"

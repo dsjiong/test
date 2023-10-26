@@ -68,6 +68,14 @@ def skip_failed_cases(reason):
     return decorator
 
 
+def mySkip(func):
+    def reBackTest(self):
+        if self._resultForDoCleanups.failures or self._resultForDoCleanups.errors:
+            raise unittest.SkipTest("{} do not excute because {} is failed".format(func.__name__,self._resultForDoCleanups.failures[0][0]._testMethodName))
+        func(self)
+    return reBackTest
+
+
 def stop_on_failure(cls):
     orig_run = cls.run
 

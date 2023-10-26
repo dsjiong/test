@@ -74,22 +74,28 @@ def queryInFlow():
 #     print("C端查询流水", re)
 # queryFlowByName()
 
-'''
-装饰器的使用
-def test(cls):
-    print("test")
-    print(cls)
-    return
-@test
-def func():
-    print("abc")
+
+# 装饰器的使用
+resource = {"资源性资产": (1600008673008504834, 0, "Z000000"), "农用地": (1600008673084002305,	1600008673008504834, "Z010000")}
+
+"""
+正整数的反转
+
+Version: 0.1
+Author: 骆昊
+"""
+
+num = int(input('num = '))
+reversed_num = 0
+while num > 0:
+    reversed_num = reversed_num * 10 + num % 10
+    num //= 10
+print(reversed_num)
 
 
-1600008673008504834		资源性资产	 Z000000
-1600008673084002329     经营性资产     J000000
-1600032507262603269     非经营性资产   F000000
+# 1600008673084002329     经营性资产     J000000
+# 1600032507262603269     非经营性资产   F000000
 
-'''
 
 # 假设有一个包含重复值的列表
 
@@ -119,8 +125,8 @@ def func():
 
     return warppend"""
 
-
-"""@stop_on
+"""
+@mySkip
 class demo(unittest.TestCase):
 
     @classmethod
@@ -148,7 +154,8 @@ class demo(unittest.TestCase):
 
 
 if __name__ == '__main__':
-     unittest.main()"""
+     unittest.main()
+"""
 
 """current_time = str(datetime.datetime.now())[:-7]
 print(current_time)
@@ -180,7 +187,6 @@ res = requests.post(url, headers=header, files=files, verify=False)  # 发送POS
 print(res)
 print(res.text)
 print(res.content)"""
-
 
 """# coding=utf-8
 import time

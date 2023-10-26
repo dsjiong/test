@@ -32,14 +32,14 @@ class public:
     admin = '/api/admin/v1/sysUser/open/loginByCode'
     user = '/api/user/v1/user/open/loginByCode'
     # census = '/api/user/v1/user/open/censusLoginByCode'
-    vPhone = 13751964424
+    vPhone = 13751964423    # 13751964424
     villagePhone = {"phone": vPhone, "code": "888888"}
-    aPhone = 13751964426
+    aPhone = 13751964426    # 13751964426
     auditPhone = {"phone": aPhone, "code": "888888"}
     uPhone = 13751964417
     userPhone = {"phone": uPhone, "code": "888888", "user_Type": 1}
     '''
-    用户登录手机号：13751964417  #袁 13535550504 # 15521289224  法人手机号 13802965035   工行手机号18902284540   郑组长 17346642256
+    用户登录手机号：13751964417  #袁 13535550504 # 15521289224  法人手机号 13802965035   工行手机号 18902284540   郑组长 17346642256
     对应付款帐号：     2               4        3602019309200000266
     '''
 

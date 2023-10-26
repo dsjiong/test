@@ -10,8 +10,7 @@ class Intention(unittest.TestCase, information):
     def setUpClass(self):
         # 使用机构名称作为项目名称，拼接时间
         self.cunInfo = information().getorgInfo(self.villageHeaders)
-        self.auditInfo = information().getorgInfo(self.auditHeaders)
-        self.getSysUser = information().getSysUser(self.vPhone, self.villageHeaders)
+        self.getUser = information().getSysUser(self.vPhone, self.villageHeaders)
         prefix = self.cunInfo["organizationName"][0:5]
         self.assetName = self.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + '遴选表决测试'
         self.voteUser = '000'  # 000=所有成员 111=仅成员代表和户代表 110=仅成员代表 101=仅户代表
@@ -78,7 +77,7 @@ class Intention(unittest.TestCase, information):
                 "oriIdCardNo": asstInfo['oriIdCardNo'],
                 "oriUserPhone": asstInfo['oriUserPhone'],
                 # "images": asstInfo['mainPicture'],
-                # "assetGroupCode": asstInfo["assetGroupCodeLevel5"],
+                "assetGroupCode": asstInfo["assetGroupCodeLevel3"],
                 "assetProjectId": None,
                 "tradeTypeName": "出租",
                 "projectTypeName": asstInfo["assetGroupLevel5Name"],
@@ -87,8 +86,8 @@ class Intention(unittest.TestCase, information):
                 "tradeType": "01",  # 项目类别 01=出租 02=出让 99=其它
                 "organizationId": self.cunInfo["sysOrganizationId"],
                 "organizationName": self.cunInfo["organizationName"],
-                "contact": self.getSysUser['fullName'],
-                "phone": self.getSysUser['phone'],
+                "contact": self.getUser['fullName'],
+                "phone": self.getUser['phone'],
                 "projectName": self.projectName,
                 "projectType": asstInfo["assetGroupCodeLevel5"],
                 "projectStartDate": None,
@@ -97,10 +96,13 @@ class Intention(unittest.TestCase, information):
             },
             "cloudDetailIntenderDemandVo": {  # 意向人资格要求
                 "intenderDemand": 1,  # 是否需要资质证明材料 0=否 1=是
-                "remarkCondition": "1、袁2、力3、思",  # 受让人或承租人条件
+                "remarkCondition": "资格审核材料",  # 受让人或承租人条件
                 "materials": [{  # 资质证明材料
-                    "materialsName": "袁",
-                    "remark": "1"
+                    "materialsName": "身份证",
+                    "remark": ""
+                }, {  # 资质证明材料
+                    "materialsName": "经营资格证",
+                    "remark": ""
                 }],
                 "enrollType": 0,  # 允许报名的用户类型 0=全部 1=自然人 2=法人
                 "blacklistEnter": 0  # 是否禁止警示名单报名 0=否 1=是
@@ -173,7 +175,7 @@ class Intention(unittest.TestCase, information):
             # a = random.choice([0, 1])
             voteData = {"cloudVoteResult": 1, "remark": "", "assetProjectCloudId": assetProjectCloudId}
             phone = censusData[census]['phone']
-            if phone in unique_phones:  # 如果phone已经出现过，则跳过当前循环
+            if phone in unique_phones or phone == '13751964417':  # 如果phone已经出现过，则跳过当前循环
                 continue
             unique_phones.add(phone)  # 将当前phone添加到集合中
             data = {"phone": phone, "code": "888888", "user_Type": 1}
@@ -266,26 +268,38 @@ class Intention(unittest.TestCase, information):
         # 先将付款账号改成工行
         self.update()
         projectId = self.getProjectInfoPage(self.projectName)
-        idUrl = "/api/auction_interface/v1/assetProjectAuditMaterials/getAssetProjectAuditMaterials"
+        idUrl = "/api/auction/v1/assetProjectAuditMaterials/getAssetProjectAuditMaterials"
         idData = {"assetProjectId": projectId}
-        materialsId = self.post(idUrl, idData, self.userHeaders)['data'][0]['assetProjectAuditMaterialsId']
-        url = '/api/auction_interface/v1/assetProjectEnroll/saveAssetProjectEnroll'
+        materialsId = self.post(idUrl, idData, self.userHeaders)['data']
+        url = '/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll'
         data = {
             "assetProjectId": projectId,
             "files": [{
-                "assetProjectAuditMaterialsId": materialsId,
+                "assetProjectAuditMaterialsId": materialsId[0]['assetProjectAuditMaterialsId'],
                 "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
             }, {
-                "assetProjectAuditMaterialsId": materialsId,
+                "assetProjectAuditMaterialsId": materialsId[0]['assetProjectAuditMaterialsId'],
                 "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
             }, {
-                "assetProjectAuditMaterialsId": materialsId,
+                "assetProjectAuditMaterialsId": materialsId[0]['assetProjectAuditMaterialsId'],
                 "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
             }, {
-                "assetProjectAuditMaterialsId": materialsId,
+                "assetProjectAuditMaterialsId": materialsId[0]['assetProjectAuditMaterialsId'],
                 "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
             }, {
-                "assetProjectAuditMaterialsId": materialsId,
+                "assetProjectAuditMaterialsId": materialsId[0]['assetProjectAuditMaterialsId'],
+                "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
+            }, {
+                "assetProjectAuditMaterialsId": materialsId[1]['assetProjectAuditMaterialsId'],
+                "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
+            }, {
+                "assetProjectAuditMaterialsId": materialsId[1]['assetProjectAuditMaterialsId'],
+                "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
+            }, {
+                "assetProjectAuditMaterialsId": materialsId[1]['assetProjectAuditMaterialsId'],
+                "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
+            }, {
+                "assetProjectAuditMaterialsId": materialsId[1]['assetProjectAuditMaterialsId'],
                 "fileUrl": "cqjy/000000/202309/eb8c960f-6669-4edc-b932-71ab6b6e740d.jpg"
             }]
         }
@@ -366,7 +380,7 @@ class Intention(unittest.TestCase, information):
         for census in range(total):
             # a = random.choice([0, 1])
             phone = censusData[census]['phone']
-            if phone in unique_phones:  # 如果phone已经出现过，则跳过当前循环
+            if phone in unique_phones or phone == '13751964417':  # 如果phone已经出现过，则跳过当前循环
                 continue
             unique_phones.add(phone)  # 将当前phone添加到集合中
             data = {"phone": phone, "code": "888888", "user_Type": 1}
