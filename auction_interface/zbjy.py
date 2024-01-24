@@ -13,8 +13,8 @@ class Tender(unittest.TestCase, information):
         cls.corporatePhone = [18722222224, 13802965035, 13000000000]
         cls.corporateName = ["测试供应链", "测试信巴迪", "测试百事通"]
         cls.defaultInfo = information().getDefaultInfo()
-        prefix = cls.defaultInfo["organizationName"][0:5]
-        cls.assetName = cls.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + '小额工程测试'
+        prefix = cls.defaultInfo["organizationName"][0:3]
+        cls.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + '小额工程测试'
 
     def test_01(self):
         """招标申请"""
@@ -75,7 +75,10 @@ class Tender(unittest.TestCase, information):
 
     def test_02(self):
         """项目审核"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        pageList = self.getHistoryPageList(self.projectName)
+        smallProjectId = pageList["smallProjectId"]
+        tradeNo = pageList['projectTradeNo']
+        self.setSubAccount(tradeNo, self.projectName)
         url = "/api/admin/v1/smallProjectAudit/audit"
         data = {
             "smallProjectId": smallProjectId,
@@ -90,7 +93,7 @@ class Tender(unittest.TestCase, information):
     @unittest.skip("不驳回，跳过")
     def test_rejected(self):
         """项目驳回"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        smallProjectId = self.getHistoryPageList(self.projectName)["smallProjectId"]
         url = "/api/admin/v1/smallProjectAudit/audit"
         data = {
             "smallProjectId": smallProjectId,
@@ -105,7 +108,7 @@ class Tender(unittest.TestCase, information):
     @unittest.skip("不重提，跳过")
     def test_reApply(self):
         """重提申请"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        smallProjectId = self.getHistoryPageList(self.projectName)["smallProjectId"]
         url = "/api/admin/v1/smallProject/saveProjectReApply"
         data = {
             "smallProjectId": smallProjectId,
@@ -168,7 +171,7 @@ class Tender(unittest.TestCase, information):
 
     def test_03(self):
         """发布公告"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        smallProjectId = self.getHistoryPageList(self.projectName)["smallProjectId"]
         url = "/api/admin/v1/smallProjectTrade/publicTrade"
         data = {
             "smallProjectId": smallProjectId,
@@ -198,7 +201,7 @@ class Tender(unittest.TestCase, information):
 
     def test_04(self):
         """循环报名-缴纳保证金"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        smallProjectId = self.getHistoryPageList(self.projectName)["smallProjectId"]
         path = '/api/user/v1/user/open/loginByCode'
         enrollUrl = "/api/auction/v1/smallProject/smallProjectEnroll"
         enrollData = {"smallProjectId": smallProjectId}
@@ -223,13 +226,12 @@ class Tender(unittest.TestCase, information):
 
     def test_05(self):
         """查看保证金"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        smallProjectId = self.getHistoryPageList(self.projectName)["smallProjectId"]
         path = '/api/user/v1/user/open/loginByCode'
         url = "/api/auction/v1/smallProject/queryByEarnestMoney"
         i = 0
         for phone in self.corporatePhone:
-            project_enroll_id = self.getEnrollPageList(self.projectName, self.corporateName[i])[0][
-                "assetProjectEnrollId"]
+            project_enroll_id = self.getEnrollPageList(self.projectName, self.corporateName[i])[0]["assetProjectEnrollId"]
             enrolldata = {"smallProjectId": smallProjectId, "assetProjectEnrollId": project_enroll_id}
             data = {"phone": phone, "code": "888888", "user_Type": 2}
             sessionid = self.login(data, path)  # 循环登录获取token
@@ -238,11 +240,11 @@ class Tender(unittest.TestCase, information):
             i = i + 1
         print("查看保证金")
         self.assertEqual(portal["message"], "操作成功")
-        sleep(150)
+        sleep(200)
 
     def test_06(self):
         """中标人信息"""
-        smallProjectId = self.getHistoryPageList(self.projectName)
+        smallProjectId = self.getHistoryPageList(self.projectName)["smallProjectId"]
         project_enroll_id = self.getEnrollPageList(self.projectName)[1]["assetProjectEnrollId"]
         corporateUrl = '/api/admin/v1/smallProjectWin/getEnrollDetail'
         corporationData = {"enrollId": project_enroll_id}
@@ -258,6 +260,7 @@ class Tender(unittest.TestCase, information):
             "winIdCardType": "49",
             "winName": corporate["legalPerson"],
             "smallProjectId": smallProjectId,
+            "winMoney": 5168,
             "fileList": [{
                 "fileName": "bf8590f3-e21e-46d0-98c2-44928b2df0b6.png",
                 "fileUrl": "https://cqjy-test.b2bwings.com/obs/default/441702000000/202304/fa74dd1f-a9bb-4029-af96-bef7164e7804.png"

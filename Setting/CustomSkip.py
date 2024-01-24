@@ -43,28 +43,32 @@ def skip_dependent(depend=""):
 
 
 def skip_failed_cases(reason):
-    """根据reason直接跳过"""
+    """根据 reason 直接跳过"""
     def decorator(test_item):
         if isinstance(test_item, type):
             @wraps(test_item)
             def skip_wrapper(self, *args, **kwargs):
-                print(type(test_item))
-                if super(self).__unittest_expecting_failure__:
-                    # 假设expecting_failure截取到true,跳过test_item
+                if super(test_item, self).__unittest_expecting_failure__:
+                    # 假设 expecting_failure 为 True，跳过 test_item
                     raise unittest.SkipTest(reason)
+                super(test_item, self).__init__(*args, **kwargs)
             test_item = skip_wrapper
         else:
-            pass
+            @wraps(test_item)
+            def skip_wrapper(self, *args, **kwargs):
+                raise unittest.SkipTest(reason)
 
-        # 非func就跳过所有类
+            test_item = skip_wrapper
+
+        # 非 func 就跳过所有类
         test_item.__unittest_skip__ = True
-        test_item.__unittest_skip_why__ = reason
+        if reason:
+            test_item.__unittest_skip_why__ = reason
+
         return test_item
 
     if isinstance(reason, types.FunctionType):
-        test_item = reason
-        reason = ''
-        return decorator(test_item)
+        return decorator(reason)
     return decorator
 
 

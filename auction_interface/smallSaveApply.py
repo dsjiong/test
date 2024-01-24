@@ -1,12 +1,11 @@
-from time import sleep
-import unittest
 from Setting.Base import *
 from Setting.CustomSkip import *
+from Setting.Retry import *
 
 urllib3.disable_warnings()
 
 
-@stop_on_failure
+# @stop_on_failure
 class smallTrade(unittest.TestCase, information):
 
     @classmethod
@@ -28,7 +27,6 @@ class smallTrade(unittest.TestCase, information):
 
     def test_02(self):
         """小额立项申请"""
-        assetId = self.getAssetPageList(self.assetName)
         asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/smallTrade/smallApply"
         data = {
@@ -58,7 +56,7 @@ class smallTrade(unittest.TestCase, information):
             "remark": None,
             "detailParamList": [
                 {
-                    "assetId": assetId['assetId'],
+                    "assetId": asstInfo['assetId'],
                     "sysOrganizationId": self.cunInfo["sysOrganizationId"],
                     "sysOrganizationName": self.cunInfo["organizationName"],
                     "assetName": self.assetName,
@@ -124,10 +122,10 @@ class smallTrade(unittest.TestCase, information):
             "progressiveIncreaseIncrease": None,  # 每次递增幅度为上期缴纳租金的n百分比
             "rentFree": "false",
             "rentFreePeriod": None,
-            "rentCollectMethod": 0,  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
-            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],  # 租赁开始时间
-            "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=23))[0:19],  # 租赁开始时间
-            "projectTradeYear": "23天",
+            # "rentCollectMethod": 0,  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
+            # "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],  # 租赁开始时间
+            # "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=23))[0:19],  # 租赁开始时间
+            # "projectTradeYear": "23天",
             "perpetualAssignment": "false",
             "repostAssetProject": "false",
             "fileSaveParams": [
@@ -147,6 +145,7 @@ class smallTrade(unittest.TestCase, information):
             "enrollType": 0,
             "blacklistEnter": "true",
             "isSubmit": 1,
+            "agent": "false",
             "taskId": None
         }
         apply = self.post(url, data, self.villageHeaders)
@@ -159,7 +158,6 @@ class smallTrade(unittest.TestCase, information):
         print("03立项审核", audit)
         self.assertEqual(audit["message"], '操作成功')
 
-    @skip_dependent("test_03")
     def test_04(self):
         """04发布交易公告"""
         projectInfo = self.getActivitiPage(mode='03', status=20, projectName=self.projectName)
@@ -179,37 +177,33 @@ class smallTrade(unittest.TestCase, information):
         print('04发布交易公告', repost)
         self.assertEqual(repost['message'], '操作成功')
 
+    @Retry(max_n=1)
     def test_05(self):
-        """05修改个人付款账号"""
-        up = information().update()
-        print("05修改个人付款账号", up)
-
-    def test_06(self):
-        """06报名"""
+        """05报名"""
         assetProjectId = self.getProjectInfoPage(self.projectName)
         url = "/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll"
         data = {"assetProjectId": assetProjectId}
         sign = self.post(url, data, self.userHeaders)
-        print("06报名-确定", sign)
+        print("05报名-确定", sign)
         self.assertEqual(sign['message'], '操作成功')
 
-    def test_07(self):
-        """07缴纳保证金"""
+    def test_06(self):
+        """06缴纳保证金"""
         pay = self.getEarenstMoneyForPortal(self.assetName, 3602019309200000266)
-        print("07缴纳保证金", pay)
+        print("06缴纳保证金", pay)
         self.assertEqual(pay["message"], '操作成功')
-        sleep(330)
+        sleep(360)
 
-    def test_08(self):
-        """08上传合同"""
-        req = self.uploadContract(self.assetName)
-        print("08上传合同", req)
+    def test_07(self):
+        """07上传合同"""
+        req = self.uploadContract(self.assetName, trade="20")
+        print("07上传合同", req)
         self.assertEqual(req["message"], '操作成功')
 
-    def test_09(self):
-        """09合同审核"""
+    def test_08(self):
+        """08合同审核"""
         req = self.activitiInstance(self.assetName)
-        print("09合同审核", req)
+        print("08合同审核", req)
         self.assertEqual(req["message"], '操作成功')
 
     @classmethod

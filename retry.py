@@ -5,7 +5,7 @@ from Setting.Base import *
 import unittest
 
 
-@Retry(max_n=50)
+@Retry(max_n=20)
 class cf(unittest.TestCase, information):
 
     @unittest.skip("for subAccount")
@@ -19,12 +19,11 @@ class cf(unittest.TestCase, information):
 
         # 表决出让
         getsysuser = information().getSysUser(self.vPhone, self.villageHeaders)
-        assetId = self.getAssetPageList(assetName)
         asstInfo = self.getChooseAssetList(assetName, cunInfo["sysOrganizationId"])
         url = '/api/admin/v1/assetProjectCloud/cloudTS4Most'
         data = {
             "cloudDetailBase4MostVo": {
-                "assetId": assetId['assetId'],
+                "assetId": asstInfo['assetId'],
                 "sysOrganizationId": cunInfo["sysOrganizationId"],
                 "sysOrganizationName": cunInfo["organizationName"],
                 "assetName": assetName,
@@ -164,7 +163,6 @@ class cf(unittest.TestCase, information):
         self.assertEqual(resource["message"], '操作成功')
 
         # 立项申请-出租
-        assetId = self.getAssetPageList(assetName)
         asstInfo = self.getChooseAssetList(assetName, cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/assetProject/saveProjectApply"
         data = {
@@ -193,7 +191,7 @@ class cf(unittest.TestCase, information):
             "remarkTaxation": "税费承担说明",
             "remark": "备注",
             "detailParamList": [{
-                "assetId": assetId['assetId'],
+                "assetId": asstInfo['assetId'],
                 "sysOrganizationId": cunInfo["sysOrganizationId"],
                 "sysOrganizationName": cunInfo["organizationName"],
                 "assetName": assetName,
@@ -289,7 +287,7 @@ class cf(unittest.TestCase, information):
         print("03立项审核", req)
         self.assertEqual(req["message"], '操作成功1')
 
-    @unittest.skip("for subAccount")
+    # @unittest.skip("for subAccount")
     def test_small(self):
         """小额交易"""
         # 使用机构名称作为项目名称，拼接时间
@@ -306,7 +304,6 @@ class cf(unittest.TestCase, information):
         self.assertEqual(resource["message"], '操作成功')
 
         """小额申请"""
-        assetId = self.getAssetPageList(assetName)
         asstInfo = self.getChooseAssetList(assetName, cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/smallTrade/smallApply"
         data = {
@@ -336,7 +333,7 @@ class cf(unittest.TestCase, information):
             "remark": None,
             "detailParamList": [
                 {
-                    "assetId": assetId['assetId'],
+                    "assetId": asstInfo['assetId'],
                     "sysOrganizationId": cunInfo["sysOrganizationId"],
                     "sysOrganizationName": cunInfo["organizationName"],
                     "assetName": assetName,
@@ -434,7 +431,7 @@ class cf(unittest.TestCase, information):
         print("03立项审核", audit)
         self.assertEqual(audit["message"], '操作成功1')
 
-    @unittest.skip("for subAccount")
+    # @unittest.skip("for subAccount")
     def test_consult(self):
         """公开协商"""
         # 使用机构名称作为项目名称，拼接时间
@@ -452,7 +449,6 @@ class cf(unittest.TestCase, information):
 
         """发布遴选公告"""
         # 利用资产名称查询资产信息
-        assetId = self.getAssetPageList(assetName)
         asstInfo = self.getChooseAssetList(assetName, cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/openConsult/selectApply"
         data = {
@@ -482,7 +478,7 @@ class cf(unittest.TestCase, information):
             "remark": None,
             "detailParamList": [
                 {
-                    "assetId": assetId['assetId'],
+                    "assetId": asstInfo['assetId'],
                     "sysOrganizationId": cunInfo["sysOrganizationId"],
                     "sysOrganizationName": cunInfo["organizationName"],
                     "assetName": assetName,
@@ -596,12 +592,11 @@ class cf(unittest.TestCase, information):
         self.assertEqual(resource["message"], '操作成功')
 
         """发起表决"""
-        assetId = self.getAssetPageList(assetName)
         asstInfo = self.getChooseAssetList(assetName, cunInfo["sysOrganizationId"])
         url = '/api/admin/v1/assetProjectCloud/cloudTS4Most'
         data = {
             "cloudDetailBase4MostVo": {
-                "assetId": assetId['assetId'],
+                "assetId": asstInfo['assetId'],
                 "sysOrganizationId": cunInfo["sysOrganizationId"],
                 "sysOrganizationName": cunInfo["organizationName"],
                 "assetName": assetName,
@@ -828,7 +823,6 @@ class cf(unittest.TestCase, information):
 
         """意向人申请"""
         # 先将付款账号改成工行
-        self.update()
         projectId = self.getProjectInfoPage(projectName)
         idUrl = "/api/auction/v1/assetProjectAuditMaterials/getAssetProjectAuditMaterials"
         idData = {"assetProjectId": projectId}

@@ -3,10 +3,10 @@ import time
 from Setting.Base import *
 
 
-# from Setting.CustomSkip import *
+from Setting.CustomSkip import *
 
 
-# @stop_on_failure
+@stop_on_failure
 class testOpenConsult(unittest.TestCase, information):
 
     @classmethod
@@ -19,7 +19,6 @@ class testOpenConsult(unittest.TestCase, information):
         self.projectName = self.assetName = information().getorgInfo(self.villageHeaders)["organizationName"][0:3] + \
                                             (datetime.datetime.now()).strftime('%m%d%H%M%S') + '协商测试'
 
-    #  ------------------
     def test_01(self):
         """资产登记"""
         print(self.assetName)
@@ -31,7 +30,6 @@ class testOpenConsult(unittest.TestCase, information):
     def test_02(self):
         """发布遴选公告"""
         # 利用资产名称查询资产信息
-        assetId = self.getAssetPageList(self.assetName)
         asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = "/api/admin/v1/openConsult/selectApply"
         data = {
@@ -61,7 +59,7 @@ class testOpenConsult(unittest.TestCase, information):
             "remark": None,
             "detailParamList": [
                 {
-                    "assetId": assetId['assetId'],
+                    "assetId": asstInfo['assetId'],
                     "sysOrganizationId": self.cunInfo["sysOrganizationId"],
                     "sysOrganizationName": self.cunInfo["organizationName"],
                     "assetName": self.assetName,
@@ -114,20 +112,20 @@ class testOpenConsult(unittest.TestCase, information):
             ],
             "payTradeEarnestMoney": "true",
             "tradeEarnestMoney": 1,
-            "floorPrice": 10000,
-            "assetDeliverDay": "",  # 合同签订X日之后交付资产
-            "progressiveIncrease": 1,  # 是否递增付款金额 0=否 1=是
-            "progressiveIncreaseWay": 2,  # 递增方式 1=按比例递增 2=按固定金额递增
-            "progressiveIncreaseAmount": 5000,  # 每次递增固定金额
-            "progressiveIncreaseStartMonth": 3,  # 从第n个月开始递增
-            "progressiveIncreaseMonth": 1,  # 每n个月递增一次
-            "progressiveIncreaseIncrease": None,  # 每次递增幅度为上期缴纳租金的n百分比
-            "rentFree": "false",  # 是否有免租期
-            "rentFreePeriod": None,  # 免租天数
-            "rentCollectMethod": 0,  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
-            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],
-            "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=20))[0:19],
-            "projectTradeYear": "20天",
+            "floorPrice": 6666,
+            "assetDeliverDay": 1,  # 合同签订X日之后交付资产
+            # "progressiveIncrease": None,  # 是否递增付款金额 0=否 1=是
+            # "progressiveIncreaseWay": None,  # 递增方式 1=按比例递增 2=按固定金额递增
+            # "progressiveIncreaseAmount": None,  # 每次递增固定金额
+            # "progressiveIncreaseStartMonth": None,  # 从第n个月开始递增
+            # "progressiveIncreaseMonth": None,  # 每n个月递增一次
+            # "progressiveIncreaseIncrease": None,  # 每次递增幅度为上期缴纳租金的n百分比
+            # "rentFree": "false",  # 是否有免租期
+            # "rentFreePeriod": None,  # 免租天数
+            # "rentCollectMethod": 0,  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
+            # "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],
+            # "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=20))[0:19],
+            # "projectTradeYear": "20天",
             "perpetualAssignment": "false",
             "repostAssetProject": "false",
             "fileSaveParams": [
@@ -154,23 +152,23 @@ class testOpenConsult(unittest.TestCase, information):
         self.assertEqual(req["message"], '操作成功')
 
     def test_03(self):
-        # 调用审核
+        """遴选审核"""
         req = self.audit(self.projectName, mode='02', status=101)
         print("03遴选审核", req)
         self.assertEqual(req["message"], '操作成功')
 
     def test_04(self):
-        # 先将付款帐号改成工行
-        self.update()
-        # 意向人申请
+        """意向人申请"""
         projectId = self.getProjectInfoPage(self.projectName)
         url = '/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll'
         data = {"assetProjectId": projectId, "files": []}
         req = self.post(url, data, self.userHeaders)
         print("04意向人申请", req)
+        sleep(80)
         self.assertEqual(req["message"], '操作成功')
 
     def test_05(self):
+        """转立项"""
         # 获取projectId
         projectId = self.getProjectInfoPage(self.projectName)
         # 获取项目assetProjectEnrollId
@@ -249,10 +247,10 @@ class testOpenConsult(unittest.TestCase, information):
             "auctionPrice": None,
             "legalIdCard": None,
             "auctionDate": None,
-            "rentCollectMethod": 0,  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
-            "projectStartDate": req3["data"]['assetProject']['projectStartDate'],
-            "projectEndDate": req3["data"]['assetProject']['projectEndDate'],
-            "projectTradeYear": req3["data"]['assetProject']['projectTradeYear'],
+            # "rentCollectMethod": 0,  # 租金收取方式 0=按月 1=按季 2=按半年 3=按年 4=一次性
+            # "projectStartDate": req3["data"]['assetProject']['projectStartDate'],
+            # "projectEndDate": req3["data"]['assetProject']['projectEndDate'],
+            # "projectTradeYear": req3["data"]['assetProject']['projectTradeYear'],
             "createUserName": req3["data"]['assetProject']['createUserName'],
             "requires": False,
             "projectCloseType": None,
@@ -378,51 +376,52 @@ class testOpenConsult(unittest.TestCase, information):
             "confirmedPrice": 6666,
             "isSubmit": 1,
             "taskId": None,
+            "agent": "false",
             "applyType": 2
         }
         req = self.post(url, data, self.villageHeaders)
         print('05指定意向人并转立项申请', req)
         self.assertEqual(req["message"], '操作成功')
 
-    def test_06(self):
+    def test_07(self):
         # 立项审核
         req = self.audit(self.projectName, mode='02', status=11)
         self.assertEqual(req["message"], '操作成功')
-        print('06立项审核', req)
+        print('07立项审核', req)
 
-    def test_07(self):
+    def test_08(self):
         # 意向人同意
         project = self.getProjectManagementList(self.projectName)
         url = '/api/auction/v1/openConsult/intentConfirm'
         data = {"assetProjectId": project['assetProjectId'],
                 "businessKey": project['businessKey'], "status": 1, "annotation": ""}
         req = self.post(url, data, self.userHeaders)
-        print('07意向人同意', req)
+        print('08意向人同意', req)
         self.assertEqual(req["message"], '操作成功')
 
-    def test_08(self):
+    def test_09(self):
         # 缴纳保证金并查询
         req = self.getEarenstMoneyForPortal(self.projectName, 3602019309200000266)
-        print('08查询保证金', req)
+        print('09查询保证金', req)
         self.assertEqual(req["message"], '操作成功')
         time.sleep(300)
 
-    def test_09(self):
+    def test_10(self):
         # 上传合同
         req = self.uploadContract(self.projectName)
-        print("09上传合同", req)
-        self.assertEqual(req["message"], '操作成功')
-
-    def test_10(self):
-        # 合同审核
-        req = self.activitiInstance(self.projectName)
-        print("10合同审核", req)
+        print("10上传合同", req)
         self.assertEqual(req["message"], '操作成功')
 
     def test_11(self):
+        # 合同审核
+        req = self.activitiInstance(self.projectName)
+        print("11合同审核", req)
+        self.assertEqual(req["message"], '操作成功')
+
+    def test_12(self):
         # 查询成交公告
         req = self.search_notice(self.assetName)
-        print("11查询成交公告", req)
+        print("12查询成交公告", req)
         self.assertEqual(req["data"]["records"][0]["projectName"], self.projectName)
 
     @classmethod

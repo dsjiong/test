@@ -30,12 +30,11 @@ class Vote(unittest.TestCase, information):
 
     def test_02(self):
         """发起表决"""
-        assetId = self.getAssetPageList(self.assetName)
         asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = '/api/admin/v1/assetProjectCloud/cloudTS4Most'
         data = {
             "cloudDetailBase4MostVo": {
-                "assetId": assetId['assetId'],
+                "assetId": asstInfo['assetId'],
                 "sysOrganizationId": self.cunInfo["sysOrganizationId"],
                 "sysOrganizationName": self.cunInfo["organizationName"],
                 "assetName": self.assetName,
@@ -268,36 +267,31 @@ class Vote(unittest.TestCase, information):
         self.assertEqual(repost['message'], '操作成功')
 
     def test_09(self):
-        """修改付款账号"""
-        up = information().update()
-        print("09修改个人付款账号", up)
-
-    def test_10(self):
         """报名-确定"""
         assetProjectId = self.getProjectInfoPage(self.projectName)
         url = "/api/auction/v1/assetProjectEnroll/saveAssetProjectEnroll"
         data = {"assetProjectId": assetProjectId}
         sign = self.post(url, data, self.userHeaders)
-        print("10报名-确定", sign)
+        print("09报名-确定", sign)
         self.assertEqual(sign['message'], '操作成功')
 
-    def test_11(self):
+    def test_10(self):
         """缴纳保证金并查看"""
         pay = self.getEarenstMoneyForPortal(self.assetName, 3602019309200000266)
-        print("11缴纳保证金", pay)
+        print("10缴纳保证金", pay)
         self.assertEqual(pay["message"], '操作成功')
         sleep(130)
 
-    def test_12(self):
+    def test_11(self):
         """上传合同"""
         req = self.uploadContract(self.assetName)
-        print("12上传合同", req)
+        print("11上传合同", req)
         self.assertEqual(req["message"], '操作成功')
 
-    def test_13(self):
+    def test_12(self):
         """合同审核"""
         req = self.activitiInstance(self.assetName)
-        print("13合同审核", req)
+        print("12合同审核", req)
         self.assertEqual(req["message"], '操作成功')
 
     @classmethod

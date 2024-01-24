@@ -4,7 +4,9 @@ import json
 import datetime
 import requests
 import urllib3
-import unittest
+
+import Setting.Publics
+from Setting.Base import *
 import os
 from functools import wraps
 
@@ -75,26 +77,58 @@ def queryInFlow():
 # queryFlowByName()
 
 
-# 装饰器的使用
-resource = {"资源性资产": (1600008673008504834, 0, "Z000000"), "农用地": (1600008673084002305,	1600008673008504834, "Z010000")}
-
-"""
-正整数的反转
-
-Version: 0.1
-Author: 骆昊
-"""
-
-num = int(input('num = '))
-reversed_num = 0
-while num > 0:
-    reversed_num = reversed_num * 10 + num % 10
-    num //= 10
-print(reversed_num)
-
-
+"""resource = {"资源性资产": (1600008673008504834, 0, "Z000000"),
+            "农用地": (1600008673084002305, 1600008673008504834, "Z010000")}
 # 1600008673084002329     经营性资产     J000000
 # 1600032507262603269     非经营性资产   F000000
+
+def get_data(parentid=""):
+    url = "/api/admin/v1/assetGroup/getByParentId"
+    params = {"parentid": parentid}
+    response = public().post(url, params, information().villageHeaders)
+    print(type(response))
+    return response["data"]
+
+
+def find_code_by_name(name, data):
+    codes = []
+    for item in data:
+        if item["assetGroupName"] == name:
+            codes.append((item["assetGroupCode"], item["parentId"], item["assetGroupId"]))
+            parentid = item["parentId"]
+            while parentid:
+                for item in data:
+                    if item["assetGroupId"] == parentid:
+                        codes.append((item["assetGroupCode"], item["parentId"]))
+                        parentid = item["parentId"]
+                        break
+                else:
+                    break
+    return codes
+
+
+# 测试调用接口并查找code和parentid
+parentid = None  # 替换为实际的parentid，如果为空则传入None
+data = get_data(parentid)
+if data:
+    name = "资源性资产"  # 替换为实际要查找的name
+    codes = find_code_by_name(name, data)
+    if codes:
+        for code, parentid, assetGroupId in codes:
+            print(f"name: {name}, code: {code}, parentid: {parentid}, assetGroupId:{assetGroupId}")
+    else:
+        print(f"未找到name为'{name}'的数据")"""
+
+
+# target_name = "林木"
+# target_index = None
+#
+# for i, item in enumerate(data):
+#     if item["assetGroupName"] == target_name:
+#         target_index = i
+#         break
+# print("目标位置：", target_index)
+# print(data[target_index]['assetGroupCode'])
 
 
 # 假设有一个包含重复值的列表
@@ -125,37 +159,37 @@ print(reversed_num)
 
     return warppend"""
 
-"""
-@mySkip
-class demo(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.word = "execute test"
+# @skip_failed_cases("出现错误终止测试")
+# class demo(unittest.TestCase):
+#
+#     @classmethod
+#     def setUpClass(cls) -> None:
+#         cls.word = "execute test"
+#
+#     def test_01(self):
+#         print("execute test1")
+#
+#     # @skip_failed_cases("fail to skip")
+#     def test_02(self):
+#         print("execute test2")
+#         self.assertEqual("execute test2", self.word)
+#         # raise AssertionError
+#
+#     # @skip_dependent("test_02")
+#     def test_03(self):
+#         print("execute test3")
+#         # print("failures=", str([fail[0] for fail in self._outcome.result.failures]))
+#         self.assertEqual(1, 2)
+#
+#     @classmethod
+#     def tearDownClass(cls) -> None:
+#         pass
+#
+#
+# if __name__ == '__main__':
+#      unittest.main()
 
-    def test_01(self):
-        print("execute test1")
-
-    # @skip_failed_cases("fail to skip")
-    def test_02(self):
-        print("execute test2")
-        self.assertEqual("execute test2", self.word)
-        # raise AssertionError
-
-    # @skip_dependent("test_02")
-    def test_03(self):
-        print("execute test3")
-        # print("failures=", str([fail[0] for fail in self._outcome.result.failures]))
-        self.assertEqual(1, 2)
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        pass
-
-
-if __name__ == '__main__':
-     unittest.main()
-"""
 
 """current_time = str(datetime.datetime.now())[:-7]
 print(current_time)
@@ -214,3 +248,23 @@ if __name__ == '__main__':
     mail_addr = 'https://qiye.aliyun.com/login/oauth2/v2.0/login.json?referer=https%3A%2F%2Fqiye.aliyun.com&device_id=a3e7a9a8-787c-4c6c-b5fb-79dad0b20a54&response_type=code&state=7c01c518-e3bd-4c15-8d97-fc3138c61dde&code_challenge_method=S256&redirect_uri=https%3A%2F%2Fqiye.aliyun.com%2Falimail%2Fauth%2FcallbackForCore&device_id_type=UUID&lang=zh_CN&client_id=legacy_webmail&code_challenge=eJDQZHPjWkIDhpL_nr82jcBSgBbefUifcqCvmOOX1RM'
     login_mail(mail_addr)
 """
+
+
+
+time = (datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
+sub_account_no = "123"
+trade_no = "456"
+project_name = "abc"
+sql = ("INSERT INTO `cqjy-account`.`t_sub_account`(`sub_account_id`, `app_id`, `app_name`, `sub_app_id`, `sub_account_no`, "
+       "`sub_account_name`, `sub_req_no`, `organization_name`, `organization_id`,  `main_account_no`, "
+       "`account_bank_code`, `main_account_name`, `open_bank_name`,  `project_trade_no`, `auth_code`, "
+       "`account_status`, `project_name`) "
+       "VALUES (" + time + ", 'gdnccqjy', '广东省农村产权流转交易管理服务平台', '100000', '95588"+ time +"', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
+       "\'" + time + "\', '清远市清新区集体资产交易中心', 1531213778436427778, '3602023929200100926', '102', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
+       "'中国工商银行广州支行',  \'" + trade_no + "\', \'" + time + "\', '00', '" + project_name + "');")
+
+sql1 = "UPDATE cqjy.t_asset_project_enroll SET system_feedback_status = 1, pay_earnest_money_date = '" + time + "', pay_earnest_money = 1 WHERE asset_project_id = 1 ;"
+
+print(sql1)
+
+

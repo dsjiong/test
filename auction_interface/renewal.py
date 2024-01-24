@@ -365,7 +365,7 @@ def activitiInstanceht():
 
 
 if __name__ == '__main__':
-    headers = public().getSessionId()
+    headers = public().get_header()
     sessionid_v = headers[0]  # 村集体账号13210000012(工商)
     userName = "测试邓"   # 袁力思
     userPhone = 13751964417  # 13535550504

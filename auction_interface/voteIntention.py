@@ -24,12 +24,11 @@ class Intention(unittest.TestCase, information):
 
     def test_02(self):
         """发起表决"""
-        assetId = self.getAssetPageList(self.assetName)
         asstInfo = self.getChooseAssetList(self.assetName, self.cunInfo["sysOrganizationId"])
         url = '/api/admin/v1/assetProjectCloud/cloudTS4Most'
         data = {
             "cloudDetailBase4MostVo": {
-                "assetId": assetId['assetId'],
+                "assetId": asstInfo['assetId'],
                 "sysOrganizationId": self.cunInfo["sysOrganizationId"],
                 "sysOrganizationName": self.cunInfo["organizationName"],
                 "assetName": self.assetName,
@@ -266,7 +265,6 @@ class Intention(unittest.TestCase, information):
     def test_09(self):
         """意向人申请"""
         # 先将付款账号改成工行
-        self.update()
         projectId = self.getProjectInfoPage(self.projectName)
         idUrl = "/api/auction/v1/assetProjectAuditMaterials/getAssetProjectAuditMaterials"
         idData = {"assetProjectId": projectId}
