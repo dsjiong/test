@@ -3,7 +3,7 @@ from Setting.Base import *
 from Setting.CustomSkip import *
 
 
-@stop_on_failure
+# @stop_on_failure
 class Auction(unittest.TestCase, information):
 
     # 获取机构信息
@@ -45,6 +45,14 @@ class Auction(unittest.TestCase, information):
     def test_04(self):
         """发布交易公告"""
         assetProjectId = self.getProjectInfoPage(self.assetName)
+        url1 = "/api/admin/v1/sysUiaUser/getPersonalMessage"
+        data1 = {"assetProjectId": assetProjectId, "type": ""}
+        req1 = self.post(url1, data1, self.auditHeaders)
+        # 详情
+        url2 = "/api/admin/v1/assetProject/getProjectDetail"
+        data2 = {"assetProjectId": assetProjectId, "type": ""}
+        req2 = self.post(url2, data2, self.auditHeaders)
+        # return {"contact": req["data"]["assetProject"]["contact"], "phone": req["data"]["assetProject"]["phone"]}
         # 发布交易公告
         getActivitiPage = self.getActivitiPage(projectName=self.assetName)
         taskId = getActivitiPage['taskId']
@@ -56,15 +64,15 @@ class Auction(unittest.TestCase, information):
             "assetProjectId": assetProjectId,
             "auctionStartDate": str(datetime.datetime.now() + datetime.timedelta(minutes=self.startDate))[0:19],
             "auctionEndDate": str(datetime.datetime.now() + datetime.timedelta(minutes=self.endDate))[0:19],
-            "contact": self.auditInfo["fullName"],
-            "phone": self.auditInfo['phone'],
+            "contact": req2["data"]["assetProject"]["contact"],
+            "phone": req2["data"]["assetProject"]['phone'],
             "earnestMoneyPayEndDate": str(datetime.datetime.now() + datetime.timedelta(minutes=self.enroll))[0:19],
             "enrollEndDate": str(datetime.datetime.now() + datetime.timedelta(minutes=self.enroll))[0:19],
             "extendSecond": 180,
             "maxExtend": 999,
             "resultPostPeriod": 5,
             "contractDeadlinePeriod": 10,
-            "releaseUser": self.auditInfo["fullName"],
+            "releaseUser": req1["data"]["name"],
             "sysOrganizationId": self.auditInfo["sysOrganizationId"],
             "releaseOrganizationName": self.auditInfo["organizationName"],
             "releaseDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],
@@ -138,6 +146,7 @@ class Auction(unittest.TestCase, information):
         print("09上传合同", req)
         self.assertEqual(req["message"], '操作成功')
 
+    @skip_dependent("test_09")
     def test_10(self):
         """合同审核"""
         req = self.activitiInstance(self.assetName)
