@@ -37,9 +37,9 @@ class public:
     admin = '/api/admin/v1/sysUser/open/loginByCode'
     user = '/api/user/v1/user/open/loginByCode'
     # census = '/api/user/v1/user/open/censusLoginByCode'
-    vPhone = 16600000053    # input("村集体手机号：")
+    vPhone = 13751964424    # input("村集体手机号：")
     villagePhone = {"phone": vPhone, "code": "888888"}
-    aPhone = 16600000002    # input("审核手机号：")
+    aPhone = 13751964422    # input("审核手机号：")
     auditPhone = {"phone": aPhone, "code": "888888"}
     uPhone = 13751964417    # input("用户手机号：")
     userPhone = {"phone": uPhone, "code": "888888", "user_Type": 1}
@@ -71,10 +71,19 @@ class public:
         # header = self.getSessionId()
         post = requests.post(url=self.host + url, headers=header, data=json.dumps(data), verify=False)
         try:
-            post.raise_for_status()
+            # 检查响应状态码，通常200表示请求成功
+            if post.status_code == 200:
+                return post.json()  # 返回响应的JSON数据
+            else:
+                # 如果响应状态码不是200，抛出异常
+                post.raise_for_status()
             return post.json()
         except requests.exceptions.RequestException as e:
-            print("请求接口失败:", e)
+            # 捕获异常，并打印异常信息
+            print("Exception occurred:", e)
+            # 等待一段时间后重新发起请求
+            time.sleep(1)
+            return post(self, url, data, header)  # 递归调用自身重新发起请求
 
 
 if __name__ == '__main__':
