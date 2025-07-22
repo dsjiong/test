@@ -1,50 +1,145 @@
 {
-	"assetCode": null,
-	"sysOrganizationName": null,
-	"assetName": "红丰镇红丰1019092368无竞价测试",
-	"assetSelfCode": null,
-	"remark": null,
-	"threeCapitalsOwnershipNo": null,
-	"provinceId": "6879694216377704448",
-	"province": "广东省",
-	"cityId": "6879957302678438216",
-	"city": "阳江市",
-	"areaId": "6879957302678438217",
-	"area": "江城区",
-	"streetId": "1493809743212883969",
-	"street": "城东街道",
-	"address": "科华街251号",
-	"purpose": null,
-	"purposeExplain": "木林",
-	"landOccupation": "20",
-	"landOccupationUnit": 0,
-	"videoUrl": null,
-	"videoThumbnailUrl": null,
-	"images": ["asset/441702000000/202310/a842dd69-d111-48cd-92fa-106db424c2a4.jpg"],
-	"developmentType": null,
-	"developmentReason": null,
-	"unitNo": null,
-	"cadastreNo": null,
-	"landNo": null,
-	"adjunctiveResourceNo": null,
-	"attribute": null,
-	"landUsufructNo": null,
-	"landUser": null,
-	"landOwnershipNo": null,
-	"landOwner": null,
-	"startDate": null,
-	"selfUse": null,
-	"coordinate": null,
-	"disposalMethod": null,
-	"assetGroupCodeLevel1": "Z000000",
-	"assetGroupLevel1Name": "资源性资产",
-	"assetGroupCodeLevel2": "Z060000",
-	"assetGroupLevel2Name": "林木",
-	"assetGroupCodeLevel3": "Z060100",
-	"assetGroupLevel3Name": "公益林",
-	"assetGroupCodeLevel4": "",
-	"assetGroupLevel4Name": "",
-	"assetGroupCodeLevel5": "",
-	"assetGroupLevel5Name": "",
-	"sysOrganizationId": "1628654846546690049"
-}
+            "tradeMode": "01",
+            "tradeType": "01",
+            "organizationId": cun_info["sysOrganizationId"],
+            "organizationName": cun_info["organizationName"],
+            "provinceId": cun_info["provinceId"],
+            "province": cun_info["province"],
+            "cityId": cun_info["cityId"],
+            "city": cun_info["city"],
+            "areaId": cun_info["areaId"],
+            "area": cun_info["area"],
+            "streetId": cun_info["streetId"],
+            "street": cun_info["street"],
+            "address": cun_info["address"],
+            "contact": get_sys_user['fullName'],
+            "phone": get_sys_user['phone'],
+            "projectName": asset_name,
+            "projectType": asst_info['assetGroupCodeLevel3'],
+            "projectTypeName": asst_info['assetGroupLevel3Name'],
+            "remarkIndustryRequire": "行业要求",
+            "remarkFireControl": "消防情况说明",
+            "remarkOther": "其他重要情况说明",
+            "remarkOtherClause": "合同其他条款",
+            "remarkTaxation": "税费承担说明",
+            "remark": "备注",
+            "detailParamList": [{
+                "assetId": asst_info['assetId'],
+                "sysOrganizationId": cun_info["sysOrganizationId"],
+                "sysOrganizationName": cun_info["organizationName"],
+                "assetName": asset_name,
+                "assetCode": asst_info['assetCode'],
+                "assetStatus": asst_info['assetStatus'],
+                "assetNature": asst_info['assetNature'],
+                "assetType": asst_info["assetType"],
+                "assetTypeName": asst_info["assetTypeName"],
+                "assetCategory": asst_info['assetCategory'],
+                "assetCategoryName": asst_info['assetCategoryName'],
+                "disposalMethod": asst_info['disposalMethod'],
+                "acquiredDate": asst_info['acquiredDate'],
+                "purpose": asst_info['purpose'],
+                "purposeExplain": asst_info["purposeExplain"],
+                "province": cun_info["province"],
+                "provinceId": cun_info["provinceId"],
+                "city": cun_info["city"],
+                "cityId": cun_info["cityId"],
+                "area": cun_info["area"],
+                "areaId": cun_info["areaId"],
+                "street": cun_info["street"],
+                "streetId": cun_info["streetId"],
+                "assetAddress": asst_info["assetAddress"],
+                "originalValue": asst_info['originalValue'],
+                "buildArea": asst_info['buildArea'],
+                "buildAreaUnit": asst_info['buildAreaUnit'],
+                "landOccupation": asst_info['landOccupation'],
+                "landOccupationUnit": asst_info['landOccupationUnit'],
+                "mainPicture": asst_info['mainPicture'],
+                "temporaryAssets": asst_info['temporaryAssets'],
+                "contractEndDate": asst_info['contractEndDate'],
+                "assetGroupCodeLevel1": asst_info['assetGroupCodeLevel1'],
+                "assetGroupCodeLevel2": asst_info['assetGroupCodeLevel2'],
+                "assetGroupCodeLevel3": asst_info['assetGroupCodeLevel3'],
+                "assetGroupCodeLevel4": asst_info['assetGroupCodeLevel4'],
+                "assetGroupCodeLevel5": asst_info['assetGroupCodeLevel5'],
+                "assetGroupLevel1Name": asst_info['assetGroupLevel1Name'],
+                "assetGroupLevel2Name": asst_info['assetGroupLevel2Name'],
+                "assetGroupLevel3Name": asst_info['assetGroupLevel3Name'],
+                "assetGroupLevel4Name": asst_info['assetGroupLevel4Name'],
+                "assetGroupLevel5Name": asst_info['assetGroupLevel5Name'],
+                "oriUserName": asst_info['oriUserName'],
+                "oriUserType": asst_info['oriUserType'],
+                "oriIdCardType": asst_info['oriIdCardType'],
+                "oriIdCardNo": asst_info['oriIdCardNo'],
+                "oriUserPhone": asst_info['oriUserPhone'],
+                "images": ["asset/441702000000/202401/b8d0a04b-0657-47ed-abf7-db4ef5fe948e.jpg"],
+                "perfect": "true",
+                "assetWorth": 500000,
+                "assetGroupCode": asst_info['assetGroupCodeLevel3'],
+                "assetProjectId": None
+            }],
+            "fileSaveParams": [{
+                "fileType": 1,
+                "fileUrl": "project/441702000000/202307/38625b13-5963-48d2-a6ef-ef1144dcf3e1.png",
+                "fileName": "民主表决书"
+            }, {
+                "fileType": 2,
+                "fileUrl": "project/441702000000/202307/0cc60767-d50b-4523-b212-daa2ceff3e71.doc",
+                "fileName": "合同样本"
+            }, {
+                "fileType": 2,
+                "fileUrl": "project/441702000000/202307/0cc60767-d50b-4523-b212-daa2ceff3e71.doc",
+                "fileName": "合同样本"
+            }, {
+                "fileType": 7,
+                "fileUrl": "project/441702000000/202401/c54daad5-f1f4-4864-bb74-74f30ab3a4b8.png",
+                "fileName": "集体土地使用权证"
+            }, {
+                "fileType": 8,
+                "fileUrl": "project/441702000000/202401/1563268a-b4ec-480e-849c-4773c5b19287.png",
+                "fileName": "宗地图"
+            }, {
+                "fileType": 9,
+                "fileUrl": "project/441702000000/202401/8fc5274d-5316-4d90-8252-f4df307396ef.png",
+                "fileName": "地块规划设计条件"
+            }, {
+                "fileType": 10,
+                "fileUrl": "project/441702000000/202401/e5155f39-7fe3-43bd-8c3c-a9e191d83d40.png",
+                "fileName": "建设用地规划许可证"
+            }],
+            "requires": "false",
+            "remarkCondition": "无",
+            "auditMaterialsSaveParams": [],
+            "enrollType": 0,  # 允许报名用户类型
+            "blacklistEnter": "false",  # 是否禁止警示名单报名 0=否 1=是
+            "priorityOriginalLessee": "false",  # 是否原承租方优先权 0=否 1=是
+            "payTradeEarnestMoney": "true",
+            "tradeEarnestMoney": 1,
+            "floorPrice": 4168,
+            "minBidRange": 1000,
+            "maxBidRange": 9000,
+            "assetDeliverDay": 5,
+            "progressiveIncrease": "false",  # 是否递增付款金额 0=否 1=是
+            "progressiveIncreaseWay": "",  # 递增方式 1=按比例递增 2=按固定金额递增
+            "progressiveIncreaseAmount": '',  # 每次递增固定金额
+            "progressiveIncreaseStartMonth": '',  # 从第n个月开始递增
+            "progressiveIncreaseMonth": '',  # 每n个月递增一次
+            "progressiveIncreaseIncrease": None,  # 每次递增幅度为上期缴纳租金的n百分比
+            "rentFree": "false",  # 是否有免租期
+            "rentFreePeriod": None,  # 免租天数
+            "rentCollectMethod": '0',  # 租金收取方式 0=按月 1=按季 3=按年 4=一次性
+            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=1))[0:10],  # 租赁开始时间,出售类型时间为空
+            "projectEndDate": self.project_end_date(),  # 租赁开始时间,出售类型时间为空
+            "projectTradeYear": "5年6月",
+            "perpetualAssignment": "false",  # 是否永久出让 0=否 1=是
+            "repostAssetProject": "false",  # 流拍是否自动挂牌
+            "volumeRate": 5,  # 地上容积率
+            "volumeRateAcreage": 5,  # 总计算容积率建筑面积（平方米）
+            "buildingDensity": 5,   # 建筑密度（%）
+            "buildingLimitHeight": 10,  # 建筑限高（米）
+            "investmentIntensity": 10,  # 总投资强度（万元/亩）
+            "contractExpirationDate": 1,    # 合同截止天数
+            "isSubmit": 1,
+            "taskId": None,
+            "delivery":'按现状交付',
+            "agent": "false"    # 是否代办
+        }

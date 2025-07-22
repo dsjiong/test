@@ -68,6 +68,13 @@ class information(public):
         # print(req)
         return req["data"]
 
+    def getOrganizationAndParentInfo(self, header):
+        sysOrganizationId = self.getorgInfo(header)['sysOrganizationId']
+        url = '/api/admin/v1/investmentAttraction/getOrganizationAndParentInfo'
+        data = {"organizationId": sysOrganizationId, "executiveLevel": 4}
+        req = self.post(url, data, header)
+        return req['data']
+
     # 资产分类groupId
     def getByParentId(self, parentId):
         url = '/api/admin/v1/assetGroup/getByParentId'
@@ -98,8 +105,19 @@ class information(public):
             "assetCode": None,
             "sysOrganizationName": None,
             "assetName": assetName,
-            "assetSelfCode": None,
+            "assetSelfCode": assetName,
+            "assetSource": "自购",
+            "recordDate": "2024-12-04",
+            "landCertificateType": 1,
+            "ownership": "1",
+            "commonAsset": False,
+            "commonAssetRate": 100,
+            "billCount": None,
+            "originVouchers": [],
             "remark": None,
+            "assetWorth": "59990",
+            "newAssetStatusStr": None,
+            "newAssetStatus": "1",
             "threeCapitalsOwnershipNo": None,
             "provinceId": getorgInfo["provinceId"],
             "province": getorgInfo["province"],
@@ -111,8 +129,8 @@ class information(public):
             "street": getorgInfo["street"],
             "address": getorgInfo["address"],
             "purpose": None,
-            "purposeExplain": "林木",
-            "landOccupation": "16",
+            "purposeExplain": "耕地",
+            "landOccupation": "5",
             "landOccupationUnit": 0,
             "videoUrl": None,
             "videoThumbnailUrl": None,
@@ -138,10 +156,10 @@ class information(public):
             "disposalMethod": None,
             "assetGroupCodeLevel1": "Z000000",
             "assetGroupLevel1Name": "资源性资产",
-            "assetGroupCodeLevel2": "Z060000",
-            "assetGroupLevel2Name": "林木",
-            "assetGroupCodeLevel3": "Z060200",
-            "assetGroupLevel3Name": "商品林",
+            "assetGroupCodeLevel2": "Z010000",
+            "assetGroupLevel2Name": "农用地",
+            "assetGroupCodeLevel3": "Z010100",
+            "assetGroupLevel3Name": "耕地",
             "assetGroupCodeLevel4": "",
             "assetGroupLevel4Name": "",
             "assetGroupCodeLevel5": "",
@@ -151,6 +169,13 @@ class information(public):
         req = self.post(url, data, self.villageHeaders)
         # print("创建资产", req)
         return req
+
+    def projectEndDate(self, year=5, month=6, day=0):
+        """获取项目结束日期"""
+        url = '/api/admin/v1/assetProject/getProjectEndDate'
+        data = {"startDate": str(datetime.datetime.now())[0:10], "year": year, "month": month, "day": day}
+        req = self.post(url, data, self.villageHeaders)
+        return req["data"]
 
     def applyData(self, assetName, Type="00"):
         """立项申请data参数调用函数，默认Type=00,出租无资质要求"""
@@ -248,10 +273,10 @@ class information(public):
             "priorityOriginalLessee": "false",  # 是否原承租方优先权 0=否 1=是
             "payTradeEarnestMoney": "true",
             "tradeEarnestMoney": 1,
-            "floorPrice": 91688,
+            "floorPrice": 51688.88,
             "minBidRange": 10000,
             "maxBidRange": 900000,
-            "assetDeliverDay": 5,
+            "assetDeliverDay": 1,
             "progressiveIncrease": "false",  # 是否递增付款金额 0=否 1=是
             "progressiveIncreaseWay": "",  # 递增方式 1=按比例递增 2=按固定金额递增
             "progressiveIncreaseAmount": '',  # 每次递增固定金额
@@ -260,15 +285,17 @@ class information(public):
             "progressiveIncreaseIncrease": None,  # 每次递增幅度为上期缴纳租金的n百分比
             "rentFree": "false",  # 是否有免租期
             "rentFreePeriod": None,  # 免租天数
-            "rentCollectMethod": '0',  # 租金收取方式 0=按月 1=按季 3=按年 4=一次性
-            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:19],  # 租赁开始时间,出售类型时间为空
-            "projectEndDate": str(datetime.datetime.now() + datetime.timedelta(days=30))[0:19],  # 租赁开始时间,出售类型时间为空
-            "projectTradeYear": "30天",
+            "rentCollectMethod": '3',  # 租金收取方式 0=按月 1=按季 3=按年 4=一次性
+            "projectStartDate": str(datetime.datetime.now() + datetime.timedelta(days=0))[0:10],  # 租赁开始时间,出售类型时间为空
+            "projectEndDate": self.projectEndDate(), # 租赁开始时间,出售类型时间为空
+            "projectTradeYear": "5年6月",
             "perpetualAssignment": "false",  # 是否永久出让 0=否 1=是
             "repostAssetProject": "false",  # 流拍是否自动挂牌
-            "contractExpirationDate": 5,
+            "contractExpirationDate": 1,
             "isSubmit": 1,
-            "taskId": None
+            "taskId": None,
+            "delivery": "按现状交付",
+            "agent": "false"
         }
         if Type == "00":
             # 出租不变
@@ -318,7 +345,7 @@ class information(public):
     # 审核、发布工作流项目列表  默认mode=01公开竞价；status=20待发布交易公告；tradeType=01出租
     def getActivitiPage(self, mode="01", status=20, projectName=None):
         url = "/api/admin/v1/activiti/getActivitiPage"
-        data = {"current": 1, "size": 10, "tradeMode": mode,  "projectStatusList": [status],
+        data = {"current": 1, "size": 10, "tradeMode": mode, "projectStatusList": [status],
                 "projectName": projectName}
         req = self.post(url, data, self.auditHeaders)
         return req['data']['records'][0]
@@ -348,10 +375,10 @@ class information(public):
                "`sub_account_no`, `sub_account_name`, `sub_req_no`, `organization_name`, `organization_id`, "
                "`main_account_no`, `account_bank_code`, `main_account_name`, `open_bank_name`,  `project_trade_no`, "
                "`auth_code`, `account_status`, `gmt_create`, `project_name`) "
-                "VALUES (" + time + ", 'gdnccqjy', '广东省农村产权流转交易管理服务平台', '100000', '95588" + time + "', "
-                "'八赏冒乐蹬饥符曾绍亥猴睹崎等佑', \'" + time + "\', '清远市清新区集体资产交易中心', 1531213778436427778, "
-                "'3602023929200100926', '102', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
-                "'中国工商银行广州支行',  \'" + trade_no + "\', \'" + time + "\', '00', '" + time1 + "', '" + projectName +
+               "VALUES (" + time + ", 'gdnccqjy', '广东省农村产权流转交易管理服务平台', '100000', '95588" + time + "', "
+               "'八赏冒乐蹬饥符曾绍亥猴睹崎等佑', \'" + time + "\', '清远市清新区集体资产交易中心', 1531213778436427778, "
+               "'3602023929200100926', '102', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
+               "'中国工商银行广州支行',  \'" + trade_no + "\', \'" + time + "\', '00', '" + time1 + "', '" + projectName +
                "');")
         print(sql)
         cursor.execute(sql)
@@ -373,19 +400,19 @@ class information(public):
         data1 = {"assetProjectId": assetProjectId}
         req1 = self.post(url1, data1, self.userHeaders)["data"]
         # 缴纳保证金
-        url2 = "/api/account/v1/counterRecord/open/simulationAddMoney"
-        data2 = {"subAccountNo": req1["mainAccountNo"], "payerAccountNo": payerAccountNo, "amount": 1}
-        req2 = self.post(url2, data2, self.auditHeaders)
+        # url2 = "/api/account/v1/counterRecord/open/simulationAddMoney"
+        # data2 = {"subAccountNo": req1["mainAccountNo"], "payerAccountNo": '3602019309200000266', "amount": 1}
+        # req2 = self.post(url2, data2, self.auditHeaders)
         sql = ("UPDATE cqjy.t_asset_project_enroll SET system_feedback_status = 1, pay_earnest_money_date = '" + time +
                "', pay_earnest_money = 1 WHERE asset_project_id = " + assetProjectId + " ;")
-        if req2["message"] != "操作成功":
-            cursor.execute(sql)
-            try:
-                mysql.commit()
-            except Exception as e:
-                mysql.rollback()
-            cursor.close()
-            mysql.close()
+        # if req2["message"] != "操作成功":
+        cursor.execute(sql)
+        try:
+            mysql.commit()
+        except Exception as e:
+            mysql.rollback()
+        cursor.close()
+        mysql.close()
         # 查询保证金
         url = "/api/auction/v1/assetProjectEnroll/getEarenstMoneyForPortal"
         data = {"assetProjectId": assetProjectId}
@@ -400,28 +427,37 @@ class information(public):
         return req["data"]["records"][0]["assetProjectEnrollId"]
 
     def uploadContract(self, projectName, trade=None):
-        # 查询项目id，No
+        """查询项目id，No"""
         project = self.getProjectManagementList(projectName)
         url = '/api/admin/v1/assetProjectContract/saveAssetProjectContract'
         data = {
             "type": 1,
             "assetProjectId": project["assetProjectId"],
             "tradeNo": project["tradeNo"],
-            "contractStartDate": str(datetime.datetime.now())[0:10],
-            "contractYear": 0,
-            "contractMonth": 0,
-            "contractDay": 30,
-            "contractEndDate": str(datetime.datetime.now() + datetime.timedelta(days=30))[0:10],
-            "payDateUnit": 0,
-            "firstPayDate": str(datetime.datetime.now())[0:10],
-            "payDays": 2,
+            "contractNo": project["tradeNo"],
+            "contractStartDate": str(datetime.datetime.now() + datetime.timedelta(days=1))[0:10],
+            "contractYear": 5,
+            "contractMonth": 6,
+            "contractDay": 0,
+            "contractEndDate": self.projectEndDate(),
+            "payDateUnit": 4,
+            "firstPayDate": str(datetime.datetime.now() + datetime.timedelta(days=1))[0:10],
+            "payDays": 0,
             "paymentDays": 0,
-            "idCardBackFile": "ZW5jcnlwdC9jb250cmFjdC80NDA4ODIwMDAwMDAvMjAyMzAzLzcxNDAxN2IxLWZjNTMtNDUxYy1hOTgwLTdkNWQ2ODU0NDljNy5qcGc=",
-            "idCardFrontFile": "ZW5jcnlwdC9jb250cmFjdC80NDA4ODIwMDAwMDAvMjAyMzAzLzBhNzE3NzRkLTVlNDUtNGNhYi1hZTFlLTQ1MzdhYWQ2MWRiZi5qcGc=",
+            "idCardBackFile": "ZW5jcnlwdC9jb250cmFjdC80NDE3MDQwMDAwMDAvMjAyNDExL2Y1MDFlM2MzLWY0MzEtNGQwMi05YjE1LTE2MGQ0OTU1MzI4NC5wbmc=",
+            "idCardFrontFile": "ZW5jcnlwdC9jb250cmFjdC80NDE3MDQwMDAwMDAvMjAyNDExLzk2ZGM2ZWYwLWE5MjYtNGZjMS04MjkwLWU0NjY4ODUyMTVkMC5wbmc=",
             "files": [{
                 "fileName": "1.png",
                 "fileUrl": "contract/441802000000/202311/20028cc3-734b-4e0d-a043-f85a89921fe4.png"
-            }]}
+            }],
+            "clinchAmount": 5168,
+            "contractSignDate": str(datetime.datetime.now())[0:10],
+            "contractSignPlace": "科华街251号",
+            "tradeType": "02",
+            "ourOwnProportion": 100,
+            "totalPrice": "5168.00",
+            "contractName": project["projectName"]
+        }
         if trade == '20':
             del data['contractStartDate'], data['contractYear'], data['contractMonth'], data['contractDay'], (
                 data)['contractEndDate'], data['payDateUnit']

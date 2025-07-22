@@ -28,8 +28,8 @@ import requests, urllib3, json, os
 
 # cert_file = '/path/to/certificate.pem'
 urllib3.disable_warnings()
-os.environ["http_proxy"] = 'http://192.168.123.177:28'
-os.environ["https_proxy"] = 'http://192.168.123.177:28'
+os.environ["http_proxy"] = 'http://192.168.123.89:28'
+os.environ["https_proxy"] = 'http://192.168.123.89:28'
 
 
 class public:
@@ -42,10 +42,10 @@ class public:
     villagePhone = {"phone": vPhone, "code": "888888"}
     aPhone = 13751964422    # input("审核手机号：")
     auditPhone = {"phone": aPhone, "code": "888888"}
-    uPhone = 13751964417    # input("用户手机号：")
+    uPhone = 15016528831    # input("用户手机号：")
     userPhone = {"phone": uPhone, "code": "888888", "user_Type": 1}
     '''
-    用户登录手机号：13751964417  #袁 13535550504 # 15521289224  法人手机号 13802965035   工行手机号 18902284540   郑组长 17346642256
+    用户登录手机号：13751964417  #袁 13535550504 # 15521289224 #展 15016528831 法人手机号 13802965035   工行手机号 18902284540   郑组长 17346642256
     对应付款帐号：     2               4        3602019309200000266
     '''
 
@@ -83,7 +83,7 @@ class public:
             # 捕获异常，并打印异常信息
             print("Exception occurred:", e)
             # 等待一段时间后重新发起请求
-            time.sleep(1)
+            time.sleep(3)
             return post(self, url, data, header)  # 递归调用自身重新发起请求
 
 

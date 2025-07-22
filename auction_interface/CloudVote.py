@@ -16,7 +16,7 @@ class Vote(unittest.TestCase, information):
         # 使用机构名称作为项目名称，拼接时间
         self.cunInfo = information().getorgInfo(self.villageHeaders)
         self.auditInfo = information().getorgInfo(self.auditHeaders)
-        self.getsysuser = information().getSysUser(self.vPhone, self.villageHeaders)
+        self.getUser = information().getSysUser(self.vPhone, self.villageHeaders)
         prefix = self.cunInfo["organizationName"][0:5]
         self.assetName = self.projectName = prefix + (datetime.datetime.now()).strftime('%m%d%H%M%S') + '表决测试'
         self.voteUser = '101'  # 000=所有成员 111=仅成员代表和户代表 110=仅成员代表 101=仅户代表
@@ -81,19 +81,19 @@ class Vote(unittest.TestCase, information):
                 "oriIdCardType": asstInfo['oriIdCardType'],
                 "oriIdCardNo": asstInfo['oriIdCardNo'],
                 "oriUserPhone": asstInfo['oriUserPhone'],
-                "assetGroupCode": asstInfo["assetGroupCodeLevel5"],
+                "assetGroupCode": asstInfo["assetGroupCodeLevel3"],
                 "assetProjectId": None,
                 "tradeTypeName": "出租",
-                "projectTypeName": asstInfo["assetGroupLevel5Name"],
+                "projectTypeName": asstInfo["assetGroupLevel3Name"],
                 "voteType": "1",  # 云表决类型  0=立项表决 1=遴选表决 2=拟定意向人表决
                 "tradeMode": "02",  # 项目模式 01=公开竞价 02=公开协商 03=小额简易交易 04=续约交易
                 "tradeType": "01",  # 项目类别 01=出租 02=出让 99=其它
                 "organizationId": self.cunInfo["sysOrganizationId"],
                 "organizationName": self.cunInfo["organizationName"],
-                "contact": self.getsysuser['fullName'],
-                "phone": self.getsysuser['phone'],
+                "contact": self.getUser['fullName'],
+                "phone": self.getUser['phone'],
                 "projectName": self.projectName,
-                "projectType": asstInfo["assetGroupCodeLevel5"],
+                "projectType": asstInfo["assetGroupCodeLevel3"],
                 "projectStartDate": None,
                 "projectEndDate": None,
                 "projectTradeYear": None

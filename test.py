@@ -17,6 +17,46 @@ test_host = "https://cqjy-test.b2bwings.com"
 os.environ["http_proxy"] = 'http://192.168.123.177:28'
 os.environ["https_proxy"] = 'http://192.168.123.177:28'
 
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
+
+def get_future_date(date: datetime, months: int = 0, years: int = 0):
+    """
+    获取指定日期若干个月或若干年后的日期。
+
+    参数:
+    - date: 输入的初始日期 (datetime 类型)
+    - months: 添加的月数 (默认为 0)
+    - years: 添加的年数 (默认为 0)
+
+    返回值:
+    - 计算后的新日期 (datetime 类型)
+    """
+    future_date = date + relativedelta(months=months, years=years)
+    return future_date
+
+
+# 示例
+current_date = datetime.now()  # 当前日期
+one_month_later = get_future_date(current_date, months=1)
+one_year_later = get_future_date(current_date, years=1)
+
+print(f"当前日期: {str(current_date)[:10]}")
+print(f"一个月后的日期: {one_month_later}")
+print(f"一年后的日期: {one_year_later}")
+
+'''
+time_hms = datetime.datetime.now().strftime('%y%H:%M:%S')
+time_sss = datetime.datetime.now().strftime('%H:%M:%S.%f')[:-3] + 'Z'
+# time_ss = datetime.utcnow().strftime('%H:%M:%S.%f')[:-3] + 'Z'
+time_last = (datetime.datetime.now()+ datetime.timedelta(days=-30)).strftime('%Y-%m-%d %H:%M:%S')
+print(time_hms)
+print(time_sss)
+print(time_last)
+print(str(datetime.timedelta(days=25)))
+'''
+
 '''
 # for i in range(1, 10):
 #     for j in range(1, i+1):
@@ -119,7 +159,6 @@ if data:
     else:
         print(f"未找到name为'{name}'的数据")"""
 
-
 # target_name = "林木"
 # target_index = None
 #
@@ -158,7 +197,6 @@ if data:
         func(self)
 
     return warppend"""
-
 
 # @skip_failed_cases("出现错误终止测试")
 # class demo(unittest.TestCase):
@@ -249,22 +287,18 @@ if __name__ == '__main__':
     login_mail(mail_addr)
 """
 
-
-
-time = (datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
-sub_account_no = "123"
-trade_no = "456"
-project_name = "abc"
-sql = ("INSERT INTO `cqjy-account`.`t_sub_account`(`sub_account_id`, `app_id`, `app_name`, `sub_app_id`, `sub_account_no`, "
-       "`sub_account_name`, `sub_req_no`, `organization_name`, `organization_id`,  `main_account_no`, "
-       "`account_bank_code`, `main_account_name`, `open_bank_name`,  `project_trade_no`, `auth_code`, "
-       "`account_status`, `project_name`) "
-       "VALUES (" + time + ", 'gdnccqjy', '广东省农村产权流转交易管理服务平台', '100000', '95588"+ time +"', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
-       "\'" + time + "\', '清远市清新区集体资产交易中心', 1531213778436427778, '3602023929200100926', '102', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
-       "'中国工商银行广州支行',  \'" + trade_no + "\', \'" + time + "\', '00', '" + project_name + "');")
-
-sql1 = "UPDATE cqjy.t_asset_project_enroll SET system_feedback_status = 1, pay_earnest_money_date = '" + time + "', pay_earnest_money = 1 WHERE asset_project_id = 1 ;"
-
-print(sql1)
-
-
+# time = (datetime.datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
+# sub_account_no = "123"
+# trade_no = "456"
+# project_name = "abc"
+# sql = ("INSERT INTO `cqjy-account`.`t_sub_account`(`sub_account_id`, `app_id`, `app_name`, `sub_app_id`, `sub_account_no`, "
+#        "`sub_account_name`, `sub_req_no`, `organization_name`, `organization_id`,  `main_account_no`, "
+#        "`account_bank_code`, `main_account_name`, `open_bank_name`,  `project_trade_no`, `auth_code`, "
+#        "`account_status`, `project_name`) "
+#        "VALUES (" + time + ", 'gdnccqjy', '广东省农村产权流转交易管理服务平台', '100000', '95588"+ time +"', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
+#        "\'" + time + "\', '清远市清新区集体资产交易中心', 1531213778436427778, '3602023929200100926', '102', '八赏冒乐蹬饥符曾绍亥猴睹崎等佑', "
+#        "'中国工商银行广州支行',  \'" + trade_no + "\', \'" + time + "\', '00', '" + project_name + "');")
+#
+# sql1 = "UPDATE cqjy.t_asset_project_enroll SET system_feedback_status = 1, pay_earnest_money_date = '" + time + "', pay_earnest_money = 1 WHERE asset_project_id = 1 ;"
+#
+# print(sql1)

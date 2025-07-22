@@ -15,7 +15,7 @@ class smallTrade(unittest.TestCase, information):
         self.auditInfo = information().getorgInfo(self.auditHeaders)
         self.getsysuser = information().getSysUser(self.vPhone, self.villageHeaders)
         prefix = self.cunInfo["organizationName"][0:5]
-        time = (datetime.datetime.now()).strftime('%m%d%H%M%S')
+        time = (datetime.datetime.now()).strftime('%y%m%d%H%M%S')
         self.assetName = self.projectName = prefix + time + '小额出售测试'
 
     def test_01(self):

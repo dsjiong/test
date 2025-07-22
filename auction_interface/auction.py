@@ -1,4 +1,3 @@
-from time import sleep
 from Setting.Base import *
 from Setting.CustomSkip import *
 
@@ -11,13 +10,13 @@ class Auction(unittest.TestCase, information):
     def setUpClass(self):
         # 使用机构名称作为项目名称，拼接时间
         self.auditInfo = information().getorgInfo(self.auditHeaders)
-        self.Type = "21"    # 00 出租无资质；01出租有资质；10出让无资质；11出让有资质；12永久出让；20出售无资质；21出售有资质
-        self.enroll = 3
-        self.startDate = 5
-        self.endDate = 9
+        self.Type = "00"    # 00 出租无资质；01出租有资质；10出让无资质；11出让有资质；12永久出让；20出售无资质；21出售有资质
+        self.enroll = 1
+        self.startDate = 3
+        self.endDate = 37
         prefix = information().getorgInfo(self.villageHeaders)["organizationName"][0:5]
-        projectType = '竞价测试'
-        time = (datetime.datetime.now()).strftime('%m%d%H%M%S')
+        projectType = '出租竞价测试'
+        time = (datetime.datetime.now()).strftime('%y%m%d%H%M%S')
         self.assetName = self.projectName = prefix + time + projectType
 
     def test_01(self,):
@@ -85,6 +84,7 @@ class Auction(unittest.TestCase, information):
         print("04发布交易公告", req)
         self.assertEqual(req["message"], '操作成功')
 
+    @skip_dependent("test_04")
     def test_05(self):
         """报名"""
         assetProjectId = self.getProjectInfoPage(self.assetName)
@@ -101,6 +101,7 @@ class Auction(unittest.TestCase, information):
         print("05报名-确定", req)
         self.assertEqual(req["message"], '操作成功')
 
+    @skip_dependent("test_05")
     def test_06(self):
         """缴纳保证金并查看"""
         req = self.getEarenstMoneyForPortal(self.assetName, 3602019309200000266)
@@ -109,6 +110,7 @@ class Auction(unittest.TestCase, information):
         t1 = int(self.enroll * 60 + 5)
         sleep(t1)
 
+    @skip_dependent("test_06")
     def test_07(self):
         """资格审核-审核"""
         if self.Type == "01" or self.Type == "11" or self.Type == "21":
@@ -125,6 +127,7 @@ class Auction(unittest.TestCase, information):
         t1 = int((self.startDate - self.enroll) * 60 + 25)
         sleep(t1)
 
+    @skip_dependent("test_07")
     def test_08(self):
         """出价"""
         assetProjectId = self.getProjectInfoPage(self.assetName)
@@ -140,6 +143,7 @@ class Auction(unittest.TestCase, information):
         self.assertEqual(req2["message"], '操作成功')
         sleep(390)
 
+    @skip_dependent("test_08")
     def test_09(self):
         """上传合同"""
         req = self.uploadContract(self.assetName, self.Type)

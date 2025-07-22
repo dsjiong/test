@@ -12,6 +12,5 @@ class loginHandler:
 
     def visit(self, method, url=None, params=None, data=None, json=None, headers=None, **kwargs):
         headers = {"Content-Type": "application/json"}
-        return self.session.request(method, url, params=params, data=data, json=json, headers=headers,
-                                    verify=False,
+        return self.session.request(method, url, params=params, data=data, json=json, headers=headers, verify=False,
                                     **kwargs).json()

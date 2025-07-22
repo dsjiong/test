@@ -13,7 +13,7 @@ os.environ["http_proxy"] = 'http://192.168.123.83:8888'
 os.environ["https_proxy"] = 'http://192.168.123.83:8888'
 
 
-# ---------------获取帐号信息----------------
+# ---------------获取账号信息----------------
 def getVillageInfo(sessionId):
     url = test_host + "/api/admin/v1/sysOrganization/getOrganizationRegion"
     header = {"Content-Type": "application/json", "channel": "admin", "sessionid": sessionId}
@@ -520,8 +520,8 @@ if __name__ == '__main__':
     loginAdmin_url = test_host + loginAdmin_api
     loginUser_api = '/api/user/v1/user/open/loginByCode'
     req = login_class.loginHandler()
-    login_data_c = req.data(phone='13750000007')  # 村集体帐号
-    login_data_sp = req.data(phone='13750000002')  # 审批帐号
+    login_data_c = req.data(phone='13750000007')  # 村集体账号
+    login_data_sp = req.data(phone='13750000002')  # 审批账号
     sessionId_C = req.visit("post", url=loginAdmin_url, data=json.dumps(login_data_c))["data"][
         "sessionid"]  # 村集体登录
     # print(sessionId_C)
